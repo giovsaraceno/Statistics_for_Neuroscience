@@ -1,11 +1,11 @@
 ---
 title: "Introduction to Statistics and R for Neuroscience"
 output:
-  html_document:
-    df_print: paged
-    toc: true
   pdf_document:
     keep_tex: true
+    toc: true
+  html_document:
+    df_print: paged
     toc: true
 date: ''
 bibliography: notes.bib
