@@ -14,3 +14,5 @@ Topics:
     + Confidence intervals and Statistical tests
     + Multiple Linear models (i.e. t-test, Anova and Ancova) 
 
+This version is used as supporting material for teaching the basic concepts of probability and statistics using the R programming language. Throughout the sections, greater attention is placed on the application of statistical concepts. 
+This material is not intended to be a book or a comprehensive guide.
