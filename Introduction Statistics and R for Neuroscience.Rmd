@@ -1,11 +1,11 @@
 ---
 title: "Introduction to Statistics and R for Neuroscience"
 output:
-  pdf_document:
-    keep_tex: true
-    toc: true
   html_document:
     df_print: paged
+    toc: true
+  pdf_document:
+    keep_tex: true
     toc: true
 date: ''
 bibliography: notes.bib
@@ -17,7 +17,11 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Introduction
 
-The rapid advancement of neuroimaging technologies and high-performance computing (HPC) has enabled neuroscience researchers to collect unprecedented amounts of brain data, often referred to as “big brain data.” This wealth of information allows scientists to revisit longstanding questions and explore new ones on a much larger scale. Indeed, there is, especially in neuroscience, a increasing demand for novel statistical tools. Statisticians play a vital role in this process, not only by developing models to analyze and interpret data but also by incorporating biological insights into these frameworks, making them more reflective of the underlying neural processes.
+As observers, we commonly only have access to a very tiny portion of the world, from which, ideally, we would like to derive something general and universal.
+This is practically the role of statistics, that, in a world full of uncertainty, aims to derive proper scientific inferences in the face of measurement and systems noise, or of unaccounted for, or unobserved, factors and sources of influence.
+The rapid advancement of neuroimaging technologies and high-performance computing (HPC) has enabled neuroscience researchers to collect unprecedented amounts of brain data. This wealth of information allows scientists to revisit old problems and explore new ones on a much larger scale. 
+There is, especially in neuroscience, a increasing demand for novel statistical tools, due to the new challenges of simultaneous observations or recordings from an ever-growing set of variables, more complicated data structures, and a rapid growth of information. 
+ 
 
 The impact of statistics on human neuroscience can be discussed through the three main concepts of statistics defined by Ronald Fisher, father of modern statistics:
 
@@ -29,13 +33,8 @@ These foundational principles are central to key areas of brain research, such a
 
 #### Study of populations
 
-Neuroscience research often involves three types of populations: 
-
-- population across individuals, 
-- population across time, 
-- population across brain regions. 
-
-Imagine scanning the brains of 100 individuals in an MRI scanner on a single day. Here, the population is formed by the aggregate data across these subjects, capturing inter-individual variability. If we scan one individual every day for a year, the population shifts to reflect temporal changes in the same person’s brain over time. Finally, if we examine connections across multiple regions within a single brain, the population arises from spatial variability. 
+Neuroscience research often involves different types of populations, such as population across individuals, and population across time. 
+Imagine scanning the brains of 100 individuals in an MRI scanner for an hour. Here, the population is formed by the aggregate data across these subjects, capturing inter-individual variability. If we scan one individual every day for a year, the population shifts to reflect temporal changes in the same person’s brain over time. 
 
 #### Analysis of variance
 
@@ -43,9 +42,15 @@ Each of these populations introduces different types of variance--between indivi
 
 #### Data reduction
 
-One of the challenges in neuroscience is dealing with the scale of the data. Data sets often contain hundreds of terabytes or even petabytes of information, which, though rich in detail, can be noisy. Summarizing this data effectively is critical for ensuring that statistical models and computational tools can handle it efficiently. Moreover, the brain itself provides a fascinating model for how to manage complexity: it distills ever-changing sensory inputs into stable, universal patterns, such as color or motion perception. Inspired by this, statisticians aim to extract smaller, representative data sets that capture key patterns across individuals or regions, distinguish healthy subjects from patients, and track changes in mental states or disease progression over time.
+One of the challenges in neuroscience is dealing with the scale of the data. Summarizing this data effectively is critical for ensuring that statistical models and computational tools can handle it efficiently. Moreover, the brain itself has the unique ability of extracting stable, universal patterns, such as color or motion perception, from the ever-changing sensory inputs. 
+Under this perspective, there are statistical methods that aim to extract smaller representative data which summarize patterns of specific brain regions, across individuals or a specific subject, distinguish healthy subjects from patients, and potentially track changes in mental states or disease progression over time. (This aspect is not treated in this course.)
 
 ### Statistical integration in Neuroscience
+
+The importance of using appropriate statistical methods for experimental design and data analysis is well recognized across scientific disciplines. 
+The proper analysis of Big Data requires up-to-date statistical methodologies that take complex features of data such as explicit and implicit data dependencies into consideration. Better matching of statistical models that take data characteristics into account will allow for better interpretation of data outcomes. \
+Despite recent advances in statistical methods, current neuroscience research is often conducted using a limited set of well-known statistical tools. For example, many models and tests assume that the observations are independent of one another and failing to account for this dependency in the data often leads to an increased number of false positives, a major cause of the *irreproducibility crisis*.
+(Note: statisticians have developed effective methods to analyze correlated data!)
 
 Predictive modeling offers exciting opportunities in neuroscience, enabling applications such as brain disease diagnosis and decoding mental states. However, it also brings challenges, especially with causal inference. Causal inference aims to determine whether an observed relationship between two variables reflects a true cause-and-effect relationship. For example, irregular neural signals in a specific brain region may correlate with a mental disorder, but this association does not necessarily imply causation. These signals could be an effect of the disorder, or the relationship could arise from a coincidental correlation caused by unmeasured factors. This challenge is further exacerbated in high-dimensional brain data, where spurious correlations or incidental endogeneity—features unintentionally correlated with the model’s error terms—can violate critical assumptions and lead to misleading conclusions.
 
@@ -55,13 +60,49 @@ knitr::include_graphics("stat_developments_history.png")
 
 This figure provides a visual overview of how advancements in neuroscience and statistical methods have evolved together to decode the brain. 
 
-At its core, statistical inference allows researchers to generalize findings from a small sample to a broader population. This process is essential in neuroscience, where directly observing every aspect of the brain is unfeasible. Careful attention to data validity and robustness ensures that these generalizations are meaningful and scientifically sound.\
-For instance, consider a study of a neuron’s firing rate. Researchers may relate this activity to an animal’s position in a spatial environment, its running speed, or the luminance of a visual stimulus. Similarly, the study of synaptic receptor roles—such as NMDA (N-Methyl-D-Aspartate) or GABA (Gamma-aminobutyric acid) receptors in the hippocampus—illuminates mechanisms underlying cognitive tasks like spatial learning. These examples illustrate how statistical inference connects observations from experiments to theoretical understanding of brain function. \
+At its core, statistical inference allows researchers to generalize findings from a small sample to a broader population. This process is essential in neuroscience, where directly observing every aspect of the brain is unfeasible. Careful attention to data validity and robustness ensures that these generalizations are meaningful and scientifically sound.
 
 The integration of statistical analysis, computer science technologies and brain studies is advancing our understanding of brain function and inspiring brain-like computers. Neural networks, for instance, are designed following the structure and operation of the brain. McCulloch and Pitts laid the groundwork for artificial neural networks by conceptualizing a logical calculus for neural activity, framing the brain as a computational device. Similarly, Hebb’s rule, often summarized as “neurons that fire together, wire together,” provided a biological basis for learning mechanisms, influencing the design of Rosenblatt’s perceptron—the first artificial neural network capable of performing simple tasks. Many neural network-based model have begun to outperform humans in certain tasks, such as AlphaGo which demonstrated unprecedented strategic thinking playing chess. 
-Despite these successes, these models fail to fully replicate the brain’s structures and processes. The collaboration between statistics and neuroscience can bridge this gap: neuroscientists need statistical models capable of deciphering the brain's dynamic, while statisticians require deeper insights into the nervous system to enhance the biological plausibility of their models.
-This synthesis not only aids in understanding the brain’s inner workings but also bridges the gap between data and discovery.
+Facilitating collaborative research between statistics and neuroscience in the next future is a key component for pursuing the common goal of charting the functions of the human brain and using them to benefit daily life.
 
+## Reproducibility
+
+<center>
+*Reproducibility refers to the ability of a researcher to duplicate the results of a prior study using the same materials as were used by the original investigator. That is, a second researcher might use the same raw data to build the same analysis files and implement the same statistical analysis in an attempt to yield the same results. Reproducibility is a minimum necessary condition for a finding to be believable and informative.*
+</center>
+**Report of the Subcommittee on Replicability in Science - Advisory Committee to the National Science Foundation Directorate for Social, Behavioral, and Economic Sciences.**
+
+In science, it is of vital importance that multiple studies corroborate the same result. Researchers therefore need to know all the details of previous experiments in order to implement the procedures as exactly as possible. 
+However, this is becoming a major problem in neuroscience, as animal studies of behavior have proven to be hard to reproduce, and most experiments are never replicated by other laboratories. This gave rise to a *Reproducibility Crisis*. \
+Such failures undermine the credibility of theories building on them and potentially call into question substantial parts of scientific knowledge. 
+
+**Remark:** *Reproducibility* refers to re-examining and validating the analysis of a given set of data. *Replication* refers to repeating the experiment or study to obtain new, independent data with the goal of reaching the same or similar conclusions.
+
+The reproducibility crisis has been attributed to various factors that include
+
+- lack of adherence to good scientific practices
+- misuse of statistical methods 
+- Not enough documentation on how experiment is conducted and data is generated
+- Data used to generate original results unavailable
+- Software used to generate original results unavailable
+- Difficult to rerun the computational step
+
+How to make a reproducible research?
+
+- Share data (raw and pre-processed ones): The lack of data sharing is an obstacle to international research (be it academic, governmental, or commercial) for two main reasons:
+
+| - It is generally difficult or impossible to reproduce a study without the original data.
+| - The data cannot be reused or incorporated into new work by other researchers if they cannot obtain access to it.
+
+- Share code used for the analysis (clearly commented): code sharing enables others to be able to
+
+| - understand (to read and analyze) the computational parts of the work done in the article.
+| - reproduce (run) the computational parts of the work done in the article.
+| - build on code used in the computational parts of the work done in the article, for their own work.
+| - cite the software and credit its authors when they use it.
+| - Write reproducible scientific paper
+ 
+ 
 # Introduction to R
 
 #### What is R
