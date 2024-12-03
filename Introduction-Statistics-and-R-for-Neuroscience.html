@@ -9,6 +9,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
+<meta name="author" content="Giovanni Saraceno" />
 
 
 <title>Introduction to Statistics and R for Neuroscience</title>
@@ -1643,6 +1644,7 @@ display: none;
 
 <h1 class="title toc-ignore">Introduction to Statistics and R for
 Neuroscience</h1>
+<h4 class="author">Giovanni Saraceno</h4>
 
 </div>
 
@@ -1837,8 +1839,15 @@ re-examining and validating the analysis of a given set of data.
 <em>Replication</em> refers to repeating the experiment or study to
 obtain new, independent data with the goal of reaching the same or
 similar conclusions.</p>
-<p>The reproducibility crisis has been attributed to various factors
-that include</p>
+<p>A scientific claim or finding is an inference about the natural
+world, expressed as an existence statement. For most articles it is
+difficult to establish exactly which test results informed which
+hypotheses and how they affected the authors’ conclusions. In many
+cases, the hypotheses themselves are not clearly stated, or it is not
+clear how they could be explored and tested, or multiple different
+statements are used <span class="citation">(Scheel 2022)</span>. The
+reproducibility crisis has been also attributed to various factors that
+include</p>
 <ul>
 <li>lack of adherence to good scientific practices</li>
 <li>misuse of statistical methods</li>
@@ -1850,26 +1859,49 @@ generated</li>
 </ul>
 <p>How to make a reproducible research?</p>
 <ul>
+<li>Scientific claims should be stated unambiguously: the research
+hypothesis must be clear</li>
+<li>A claim cannot stand by itself. Scientific claims should be
+accompanied by a definition of their connection to the empirical
+evidence, bridging the gap between claim and raw data (specifications
+about sampling strategies, measurement instruments and circumstances of
+the data collection, analytical decisions, and any other auxiliary
+assumptions)</li>
 <li>Share data (raw and pre-processed ones): The lack of data sharing is
 an obstacle to international research (be it academic, governmental, or
-commercial) for two main reasons:</li>
-</ul>
-<div class="line-block">- It is generally difficult or impossible to
-reproduce a study without the original data.<br />
-- The data cannot be reused or incorporated into new work by other
-researchers if they cannot obtain access to it.</div>
+commercial) for two main reasons:
 <ul>
+<li>It is generally difficult or impossible to reproduce a study without
+the original data.</li>
+<li>The data cannot be reused or incorporated into new work by other
+researchers if they cannot obtain access to it.</li>
+</ul></li>
 <li>Share code used for the analysis (clearly commented): code sharing
-enables others to be able to</li>
+enables others to be able to understand (to read and analyze) the
+computational parts of the work done in the article.
+<ul>
+<li>reproduce (run) the computational parts of the work done in the
+article.</li>
+<li>build on code used in the computational parts of the work done in
+the article, for their own work.</li>
+<li>cite the software and credit its authors when they use it.</li>
+<li>Write reproducible scientific paper</li>
+</ul></li>
 </ul>
-<div class="line-block">- understand (to read and analyze) the
-computational parts of the work done in the article.<br />
-- reproduce (run) the computational parts of the work done in the
-article.<br />
-- build on code used in the computational parts of the work done in the
-article, for their own work.<br />
-- cite the software and credit its authors when they use it.<br />
-- Write reproducible scientific paper</div>
+<p>For further readings see</p>
+<ul>
+<li>Baker, M. (2016). <em>Reproducibility crisis</em>.
+<strong>Nature</strong>, 533(26), 353-66. <a href="https://doi.org/10.1038/533452a" class="uri">https://doi.org/10.1038/533452a</a></li>
+<li>Russell A.P. (2019), <em>The Costs of Reproducibility</em>,
+<strong>Neuron</strong>, 101(1), 11-14, <a href="https://doi.org/10.1016/j.neuron.2018.11.030" class="uri">https://doi.org/10.1016/j.neuron.2018.11.030</a>.</li>
+<li>Wicherts, J.M., &amp; Bakker, M. (2012). <em>Publish (your data) or
+(let the data) perish! Why not publish your data too?</em>.
+<strong>Intelligence</strong>, 40(2), 73-76. <a href="https://doi.org/10.1016/j.intell.2012.01.004" class="uri">https://doi.org/10.1016/j.intell.2012.01.004</a></li>
+<li>Wicherts, J.M., Bakker, M. and Molenaar, D. (2011) <em>Willingness
+to share research data is related to the strength of the evidence and
+the quality of reporting of statistical results.</em> <strong>PloS
+one</strong> 6.11. <a href="https://doi.org/10.1371/journal.pone.0026828" class="uri">https://doi.org/10.1371/journal.pone.0026828</a></li>
+</ul>
 </div>
 </div>
 <div id="introduction-to-r" class="section level1">
@@ -2924,6 +2956,11 @@ Appl.</em> 5: 183–214. <a href="https://doi.org/10.1146/annurev-statistics-041
 <div id="ref-long2019r" class="csl-entry">
 Long, James D, and Paul Teetor. 2019. <em>R Cookbook: Proven Recipes for
 Data Analysis, Statistics, and Graphics</em>. O’Reilly Media.
+</div>
+<div id="ref-scheel2022" class="csl-entry">
+Scheel, Anne M. 2022. <span>“Why Most Psychological Research Findings
+Are Not Even Wrong.”</span> <em>Infant and Child Development</em> 31
+(1): e2295. https://doi.org/<a href="https://doi.org/10.1002/icd.2295">https://doi.org/10.1002/icd.2295</a>.
 </div>
 <div id="ref-xie2018r" class="csl-entry">
 Xie, Yihui, Joseph J Allaire, and Garrett Grolemund. 2018. <em>R

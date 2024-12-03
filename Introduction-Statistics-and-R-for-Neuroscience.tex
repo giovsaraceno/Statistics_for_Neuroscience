@@ -135,12 +135,13 @@
 \urlstyle{same}
 \hypersetup{
   pdftitle={Introduction to Statistics and R for Neuroscience},
+  pdfauthor={Giovanni Saraceno},
   hidelinks,
   pdfcreator={LaTeX via pandoc}}
 
 \title{Introduction to Statistics and R for Neuroscience}
-\author{}
-\date{\vspace{-2.5em}}
+\author{Giovanni Saraceno}
+\date{}
 
 \begin{document}
 \maketitle
@@ -225,6 +226,22 @@ time. (This aspect is not treated in this course.)
 \subsubsection{Statistical integration in
 Neuroscience}\label{statistical-integration-in-neuroscience}}
 
+The importance of using appropriate statistical methods for experimental
+design and data analysis is well recognized across scientific
+disciplines. The proper analysis of Big Data requires up-to-date
+statistical methodologies that take complex features of data such as
+explicit and implicit data dependencies into consideration. Better
+matching of statistical models that take data characteristics into
+account will allow for better interpretation of data outcomes.\\
+Despite recent advances in statistical methods, current neuroscience
+research is often conducted using a limited set of well-known
+statistical tools. For example, many models and tests assume that the
+observations are independent of one another and failing to account for
+this dependency in the data often leads to an increased number of false
+positives, a major cause of the \emph{irreproducibility crisis}. (Note:
+statisticians have developed effective methods to analyze correlated
+data!)
+
 Predictive modeling offers exciting opportunities in neuroscience,
 enabling applications such as brain disease diagnosis and decoding
 mental states. However, it also brings challenges, especially with
@@ -273,43 +290,130 @@ functions of the human brain and using them to benefit daily life.
 \hypertarget{reproducibility}{%
 \subsection{Reproducibility}\label{reproducibility}}
 
+\emph{Reproducibility refers to the ability of a researcher to duplicate
+the results of a prior study using the same materials as were used by
+the original investigator. That is, a second researcher might use the
+same raw data to build the same analysis files and implement the same
+statistical analysis in an attempt to yield the same results.
+Reproducibility is a minimum necessary condition for a finding to be
+believable and informative.}
+
+\textbf{Report of the Subcommittee on Replicability in Science -
+Advisory Committee to the National Science Foundation Directorate for
+Social, Behavioral, and Economic Sciences.}
+
 In science, it is of vital importance that multiple studies corroborate
 the same result. Researchers therefore need to know all the details of
 previous experiments in order to implement the procedures as exactly as
 possible. However, this is becoming a major problem in neuroscience, as
 animal studies of behavior have proven to be hard to reproduce, and most
-experiments are never replicated by other laboratories.
-
-such failures undermine the credibility of theories building on them and
-potentially call into question substantial parts of scientific knowledge
+experiments are never replicated by other laboratories. This gave rise
+to a \emph{Reproducibility Crisis}.\\
+Such failures undermine the credibility of theories building on them and
+potentially call into question substantial parts of scientific
+knowledge.
 
 \textbf{Remark:} \emph{Reproducibility} refers to re-examining and
 validating the analysis of a given set of data. \emph{Replication}
 refers to repeating the experiment or study to obtain new, independent
 data with the goal of reaching the same or similar conclusions.
 
-The importance of using appropriate statistical methods for experimental
-design and data analysis is well recognized across scientific
-disciplines. The growing concern over reproducibility in biomedical
-research is often referred to as a ``problem of inadequate rigor''
-(Kilkenny et al., 2009; Prinz et al., 2011). The reproducibility crisis
-has been attributed to various factors that include lack of adherence to
-good scientific practices, underdeveloped experimental designs, and the
-misuse of statistical methods
+A scientific claim or finding is an inference about the natural world,
+expressed as an existence statement. For most articles it is difficult
+to establish exactly which test results informed which hypotheses and
+how they affected the authors' conclusions. In many cases, the
+hypotheses themselves are not clearly stated, or it is not clear how
+they could be explored and tested, or multiple different statements are
+used (Scheel 2022). The reproducibility crisis has been also attributed
+to various factors that include
 
-The proper analysis of Big Data requires up-to-date statistical
-methodologies that take complex features of data such as explicit and
-implicit data dependencies into consideration. Better matching of
-statistical models that take data characteristics into account will
-allow for better interpretation of data outcomes.
+\begin{itemize}
+\tightlist
+\item
+  lack of adherence to good scientific practices
+\item
+  misuse of statistical methods
+\item
+  Not enough documentation on how experiment is conducted and data is
+  generated
+\item
+  Data used to generate original results unavailable
+\item
+  Software used to generate original results unavailable
+\item
+  Difficult to rerun the computational step
+\end{itemize}
 
-Despite recent advances in statistical methods, current neuroscience
-research is often conducted using a limited set of well-known
-statistical tools. Many models and tests assume that the observations
-are independent of one another. Failure to account for this dependency
-in the data often leads to an increased number of false positives, a
-major cause of the irreproducibility crisis. Statisticians have
-developed effective methods to analyze correlated data.
+How to make a reproducible research?
+
+\begin{itemize}
+\tightlist
+\item
+  Scientific claims should be stated unambiguously: the research
+  hypothesis must be clear
+\item
+  A claim cannot stand by itself. Scientific claims should be
+  accompanied by a definition of their connection to the empirical
+  evidence, bridging the gap between claim and raw data (specifications
+  about sampling strategies, measurement instruments and circumstances
+  of the data collection, analytical decisions, and any other auxiliary
+  assumptions)
+\item
+  Share data (raw and pre-processed ones): The lack of data sharing is
+  an obstacle to international research (be it academic, governmental,
+  or commercial) for two main reasons:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    It is generally difficult or impossible to reproduce a study without
+    the original data.
+  \item
+    The data cannot be reused or incorporated into new work by other
+    researchers if they cannot obtain access to it.
+  \end{itemize}
+\item
+  Share code used for the analysis (clearly commented): code sharing
+  enables others to be able to understand (to read and analyze) the
+  computational parts of the work done in the article.
+
+  \begin{itemize}
+  \tightlist
+  \item
+    reproduce (run) the computational parts of the work done in the
+    article.
+  \item
+    build on code used in the computational parts of the work done in
+    the article, for their own work.
+  \item
+    cite the software and credit its authors when they use it.
+  \item
+    Write reproducible scientific paper
+  \end{itemize}
+\end{itemize}
+
+For further readings see
+
+\begin{itemize}
+\tightlist
+\item
+  Baker, M. (2016). \emph{Reproducibility crisis}. \textbf{Nature},
+  533(26), 353-66. \url{https://doi.org/10.1038/533452a}
+\item
+  Russell A.P. (2019), \emph{The Costs of Reproducibility},
+  \textbf{Neuron}, 101(1), 11-14,
+  \url{https://doi.org/10.1016/j.neuron.2018.11.030}.
+\item
+  Wicherts, J.M., \& Bakker, M. (2012). \emph{Publish (your data) or
+  (let the data) perish! Why not publish your data too?}.
+  \textbf{Intelligence}, 40(2), 73-76.
+  \url{https://doi.org/10.1016/j.intell.2012.01.004}
+\item
+  Wicherts, J.M., Bakker, M. and Molenaar, D. (2011) \emph{Willingness
+  to share research data is related to the strength of the evidence and
+  the quality of reporting of statistical results.} \textbf{PloS one}
+  6.11. \url{https://doi.org/10.1371/journal.pone.0026828}
+\end{itemize}
 
 \hypertarget{introduction-to-r}{%
 \section{Introduction to R}\label{introduction-to-r}}
@@ -2329,6 +2433,11 @@ Mathematical and Statistical Perspectives.''} \emph{Annu Rev Stat Appl.}
 \leavevmode\vadjust pre{\hypertarget{ref-long2019r}{}}%
 Long, James D, and Paul Teetor. 2019. \emph{R Cookbook: Proven Recipes
 for Data Analysis, Statistics, and Graphics}. O'Reilly Media.
+
+\leavevmode\vadjust pre{\hypertarget{ref-scheel2022}{}}%
+Scheel, Anne M. 2022. {``Why Most Psychological Research Findings Are
+Not Even Wrong.''} \emph{Infant and Child Development} 31 (1): e2295.
+https://doi.org/\url{https://doi.org/10.1002/icd.2295}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-xie2018r}{}}%
 Xie, Yihui, Joseph J Allaire, and Garrett Grolemund. 2018. \emph{R

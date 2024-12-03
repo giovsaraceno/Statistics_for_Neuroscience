@@ -1,5 +1,6 @@
 ---
 title: "Introduction to Statistics and R for Neuroscience"
+author: Giovanni Saraceno
 output:
   html_document:
     df_print: paged
@@ -78,7 +79,9 @@ Such failures undermine the credibility of theories building on them and potenti
 
 **Remark:** *Reproducibility* refers to re-examining and validating the analysis of a given set of data. *Replication* refers to repeating the experiment or study to obtain new, independent data with the goal of reaching the same or similar conclusions.
 
-The reproducibility crisis has been attributed to various factors that include
+A scientific claim or finding is an inference about the natural world, expressed as an existence statement. 
+For most articles it is difficult to establish exactly which test results informed which hypotheses and how they affected the authors' conclusions. In many cases, the hypotheses themselves are not clearly stated, or it is not clear how they could be explored and tested, or multiple different statements are used [@scheel2022].
+The reproducibility crisis has been also attributed to various factors that include
 
 - lack of adherence to good scientific practices
 - misuse of statistical methods 
@@ -89,19 +92,23 @@ The reproducibility crisis has been attributed to various factors that include
 
 How to make a reproducible research?
 
+- Scientific claims should be stated unambiguously: the research hypothesis must be clear 
+- A claim cannot stand by itself. Scientific claims should be accompanied by a definition of their connection to the empirical evidence, bridging the gap between claim and raw data (specifications about sampling strategies, measurement instruments and circumstances of the data collection, analytical decisions, and any other auxiliary assumptions)
 - Share data (raw and pre-processed ones): The lack of data sharing is an obstacle to international research (be it academic, governmental, or commercial) for two main reasons:
+    * It is generally difficult or impossible to reproduce a study without the original data.
+    * The data cannot be reused or incorporated into new work by other researchers if they cannot obtain access to it.
+- Share code used for the analysis (clearly commented): code sharing enables others to be able to understand (to read and analyze) the computational parts of the work done in the article.
+    * reproduce (run) the computational parts of the work done in the article.
+    * build on code used in the computational parts of the work done in the article, for their own work.
+    * cite the software and credit its authors when they use it.
+    * Write reproducible scientific paper
 
-| - It is generally difficult or impossible to reproduce a study without the original data.
-| - The data cannot be reused or incorporated into new work by other researchers if they cannot obtain access to it.
+For further readings see
 
-- Share code used for the analysis (clearly commented): code sharing enables others to be able to
-
-| - understand (to read and analyze) the computational parts of the work done in the article.
-| - reproduce (run) the computational parts of the work done in the article.
-| - build on code used in the computational parts of the work done in the article, for their own work.
-| - cite the software and credit its authors when they use it.
-| - Write reproducible scientific paper
- 
+- Baker, M. (2016). *Reproducibility crisis*. **Nature**, 533(26), 353-66. https://doi.org/10.1038/533452a
+- Russell A.P. (2019), *The Costs of Reproducibility*, **Neuron**, 101(1), 11-14, https://doi.org/10.1016/j.neuron.2018.11.030.
+- Wicherts, J.M., & Bakker, M. (2012). *Publish (your data) or (let the data) perish! Why not publish your data too?*. **Intelligence**, 40(2), 73-76. https://doi.org/10.1016/j.intell.2012.01.004
+- Wicherts, J.M., Bakker, M. and Molenaar, D. (2011) *Willingness to share research data is related to the strength of the evidence and the quality of reporting of statistical results.* **PloS one** 6.11. https://doi.org/10.1371/journal.pone.0026828
  
 # Introduction to R
 
