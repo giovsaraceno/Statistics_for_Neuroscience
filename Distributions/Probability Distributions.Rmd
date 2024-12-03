@@ -9,7 +9,7 @@ output:
     df_print: paged
     toc: true
 date: ''
-bibliography: notes.bib
+bibliography: ../notes.bib
 ---
 
 ```{r setup, include=FALSE}

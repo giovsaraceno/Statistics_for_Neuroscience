@@ -1662,7 +1662,7 @@ simulate such situations using the <code>sample</code> function. For
 example, to draw 5 numbers (randomly!) from the set <code>1:90</code>,
 we can use:</p>
 <pre class="r"><code>sample(1:90, 5)</code></pre>
-<pre><code>## [1] 26 32 46 78 50</code></pre>
+<pre><code>## [1] 38  2 90 39 75</code></pre>
 <p>The first argument, <code>x</code>, is a vector indicating the set to
 sample from, while <code>size</code> specifies the sample size. By
 default, the sample function samples <strong>without
@@ -1672,13 +1672,13 @@ so the sample size cannot exceed the length of the set. To sample
 <code>replace = TRUE</code>. For example, to simulate 10 coin
 tosses:</p>
 <pre class="r"><code>sample(c(&quot;H&quot;, &quot;T&quot;), 10, replace = TRUE)</code></pre>
-<pre><code>##  [1] &quot;T&quot; &quot;T&quot; &quot;H&quot; &quot;T&quot; &quot;T&quot; &quot;H&quot; &quot;H&quot; &quot;H&quot; &quot;T&quot; &quot;H&quot;</code></pre>
+<pre><code>##  [1] &quot;H&quot; &quot;T&quot; &quot;T&quot; &quot;T&quot; &quot;H&quot; &quot;T&quot; &quot;T&quot; &quot;H&quot; &quot;T&quot; &quot;T&quot;</code></pre>
 <p>In a fair coin toss, the events “Heads” and “Tails” are equally
 likely (i.e., each has a probability of <span class="math inline">\(\frac{1}{2}\)</span>). In R, we can also consider
 cases where the events are not equally probable using the
 <code>prob</code> option:</p>
 <pre class="r"><code>sample(c(&quot;H&quot;, &quot;T&quot;), 10, replace = TRUE, prob = c(0.9, 0.1))</code></pre>
-<pre><code>##  [1] &quot;T&quot; &quot;H&quot; &quot;H&quot; &quot;H&quot; &quot;H&quot; &quot;H&quot; &quot;H&quot; &quot;H&quot; &quot;H&quot; &quot;H&quot;</code></pre>
+<pre><code>##  [1] &quot;H&quot; &quot;H&quot; &quot;H&quot; &quot;H&quot; &quot;H&quot; &quot;H&quot; &quot;H&quot; &quot;H&quot; &quot;H&quot; &quot;H&quot;</code></pre>
 <p><strong>Note</strong>: The sum of the values in the prob vector must
 equal 1.</p>
 </div>
@@ -1716,14 +1716,13 @@ takes values in a discrete set and is characterized by its probability
 mass function <span class="math inline">\(f(x) = P(X = x)\)</span> or
 its cumulative distribution function <span class="math inline">\(F(x) =
 P(X \leq x)\)</span>.</p>
-<p>A continuous random variable can take values in $ $ and is
-characterized by its density function <span class="math inline">\(f(x)\)</span> and distribution function (or
-cumulative distribution function): <span class="math display">\[F(x) =
-\int_{-\infty}^x f(x) dx\]</span> <code>R</code> includes
-implementations of major probability distributions, both discrete and
-continuous, as these are central to statistical modeling and hypothesis
-testing (discussed later), replacing traditional statistical tables.
-Examples include:</p>
+<p>A continuous random variable can take values in <span class="math inline">\(`R`\)</span> and is characterized by its density
+function <span class="math inline">\(f(x)\)</span> and distribution
+function (or cumulative distribution function): <span class="math display">\[F(x) = \int_{-\infty}^x f(x) dx\]</span>
+<code>R</code> includes implementations of major probability
+distributions, both discrete and continuous, as these are central to
+statistical modeling and hypothesis testing (discussed later), replacing
+traditional statistical tables. Examples include:</p>
 <table>
 <thead>
 <tr class="header">
@@ -1862,10 +1861,10 @@ such that <span class="math inline">\(\Phi(z) = 0.9\)</span>:</p>
 <p>We can generate random numbers as realizations of random
 variables:</p>
 <pre class="r"><code>rnorm(10, mean = 3, sd = 2)</code></pre>
-<pre><code>##  [1] -0.3124041  1.2204929  4.3839088 -0.6993437  1.0230868  2.9755154
-##  [7]  1.7897635  6.0314542  5.8754500  3.6622449</code></pre>
+<pre><code>##  [1] 2.098390 2.660326 3.189899 6.346308 3.255983 5.574975 8.076612 2.920659
+##  [9] 3.645470 2.889197</code></pre>
 <pre class="r"><code>rbinom(15, size = 50, prob = 0.2)</code></pre>
-<pre><code>##  [1] 12 10 11  8 11 10  6 16 12  9  7 14 13 12 10</code></pre>
+<pre><code>##  [1]  8 11  6  8  8  6  9 12 14 10 10 13  9  4  6</code></pre>
 <p>Random data is useful for studying mathematical approximations via
 simulation study.</p>
 </div>
