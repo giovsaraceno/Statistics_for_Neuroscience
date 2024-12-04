@@ -2,11 +2,11 @@
 title: "Probability Distributions"
 author: Giovanni Saraceno
 output:
-  pdf_document:
-    keep_tex: true
-    toc: true
   html_document:
     df_print: paged
+    toc: true
+  pdf_document:
+    keep_tex: true
     toc: true
 date: ''
 bibliography: ../notes.bib
@@ -56,13 +56,15 @@ In R, we use the choose function:
 ```
 
 ## Distributions in R
-Consider independent replications of a given experiment. From a probabilistic perspective, we are often less interested in individual outcomes (success or failure) and more focused on the total number of successes. This result is random and thus described by a random variable.
+Consider independent replications of a given experiment. From a probabilistic perspective, we are often less interested in individual outcomes and more focused on the total number of outcomes. This result is random and thus described by a random variable. \
+**Remark**: A *random variable* is a real-valued function from an outcome space into the
+real line more generally into $R^n$ . The probability law defined on the outcome space induces
+(defines explicitly) a probability model for the random variable. It is the basic quantity used in probability theory to characterize a
+probability process. Random variables are categorized as discrete or continuous.
 
-Random variables are categorized as discrete or continuous.
+A discrete random variable $X$ takes values in a finite set and is characterized by its probability mass function $f(x) = P(X = x)$ or its cumulative distribution function $F(x) = P(X \leq x)$.
 
-A discrete random variable $X$ takes values in a discrete set and is characterized by its probability mass function $f(x) = P(X = x)$ or its cumulative distribution function $F(x) = P(X \leq x)$.
-
-A continuous random variable can take values in $`R`$ and is characterized by its density function $f(x)$ and distribution function (or cumulative distribution function):
+A (uni-variate) continuous random variable can take values in the real line and is characterized by its density function $f(x)$ and distribution function (or cumulative distribution function):
 $$F(x) = \int_{-\infty}^x f(x) dx$$
 `R` includes implementations of major probability distributions, both discrete and continuous, as these are central to statistical modeling and hypothesis testing (discussed later), replacing traditional statistical tables. Examples include:
 
@@ -81,7 +83,7 @@ By adding a prefix to the distribution name in `R`, we can compute these quantit
 
 |**prefix**	|**function**|
 |:----------|:---------|
-|d          |Density` |
+|d          |Density |
 |p	        |Cumulative distribution |
 |q	        |Quantile       |
 |r	        |Random Generation    |
@@ -158,6 +160,65 @@ rbinom(15, size = 50, prob = 0.2)
 ```
 Random data is useful for studying mathematical approximations via simulation study.
 
+## Examples
+
+### Bernoulli probability model
+
+**Learning Experiment [@jog1999building]**: To help establish neural correlates of procedural learning, neurons in the striatum of rats are recorded over several days as they executed a procedure
+learning task. In this task, the rat used auditory cues to learn which one of two arms of a T-maze
+to enter in order to receive a reward. On each trial, the rat was placed in a T-maze. A tone was
+played. If it was a low tone the animal had to go left to receive a reward, whereas if it was a high
+tone it had to go right to obtain its reward. Suppose that on the previous day, the animal
+executed this task 40 times and, in so doing, made 22 correct choices and 18 incorrect choices.
+Before, the start of the 40 trials today, what is the probability that the animal will give a correct
+response on a given trial?
+
+In this problem, there are only two possible outcomes: a correct response or an incorrect
+response. The outcomes are mutually exclusive. That is, when one outcome occurs, the other
+cannot occur. Let $p$ be the probability of a correct response.
+
+The Bernoulli probability model would be a good model for this problem. It defines the probability of a correct or incorrect response on each trial. Either the quantity 
+```{r}
+p_hat = 22/40
+```
+or $p = 0.5$ would be a reasonable estimate (guess) of $p$ for a trial. Use of the parameter `p_hat` would suggest that we expect the performance on the trials today to be like the performance on trials yesterday. Use of $p = 0.5$ as the guess of $p$ for today would indicate a belief that performance will be indistinguishable from chance on today’s trial.
+
+*Exercise*: Plot the Bernoulli probability mass function and the cumulative distribution.
+
+### Binomial probability model
+
+If today we test the rat on the same task and give it 40 trials, and we assume that the probability of a correct choice is $p$, what are the possible outcomes and what is the probability of each outcome?
+
+On each trial, there can be either a correct or an incorrect response. Across the 40 trials,
+there can be any combination of correct and incorrect responses such that the sum of correct
+and incorrect responses equals 40. That is, there are $k$ correct responses and $40 - k$ incorrect
+responses for $k = 0,\ldots, 40$. If we assume that the trials are independent, and that on each trial the probability of a correct response is $p$ and the probability of an incorrect response is $1-p$ then the probability of this event is
+$$Pr(k \mbox{ successes}|40 \mbox{ trials}) = p^k 1-p)^{40-k}$$.
+
+*Exercise*: Plot the Bernoulli probability mass function and the cumulative distribution.
+
+### Poisson probability model
+
+**The Quantal Release Hypothesis** for the release of acetylcholine at the frog
+motor neuromuscular junction states that in response to stimulation, acetylcholine is released
+from the motor nerve terminal in discrete “packets” or quanta. Normal endplate potentials
+(EPPs) are the result of several hundred quanta. Miniature EPP’s are the result of spontaneous
+release of single quanta. An important corollary of the quantal release hypothesis is that there is
+most likely a large population of quanta in the nerve terminal, each one of which has a small
+probability of being released by a nerve impulse. We now know that these quanta are packaged
+in vesicles. For a fixed small time interval (fraction of a millisecond) can we compute the
+probability that a given number of quanta or vesicles will be released?
+
+To study this problem we can formulate a binomial probability model in which $N$ is the
+number of quanta or release sites and $p$ is the probability of release in a given small time
+interval. Let us assume that the release sites behave independently. This then leads to the
+binomial probability model and hence the probability of observing exactly $k$ quanta released in
+the specified small time interval. As a practical matter, as $N$ becomes large, we can
+approximate this calculation by assuming that the probability of release decreases so that $N \times p \to \lambda$. Hence, for $N$ sufficiently large, we have $Np \approx \lambda$ or $p = \frac{\lambda}{N}$.
+
+*Exercise*: Plot the Poisson probability mass function and the cumulative distribution.
+
+
 # Exercises
 
 #### Exercise 1
@@ -196,3 +257,23 @@ Consider a disease where the probability of post-operative complications is 20%.
 #### Exercise 4
 The toss of a coin can be simulated in R using rbinom instead of sample. How exactly can this be done? \
 Hint: Simulate 10 tosses of a fair coin using rbinom.
+
+#### Exercise 5
+
+Suppose that we have collected the birthdays from 16 students in a class:
+
+|         |         |
+|:--------|:--------|
+|January  | 29      |
+|February | 17 21 24|
+|March    | 11 13   |
+|April    | 10 27   |
+|May      | 11      |
+|June     | 11 28   |
+|July     | 6 25    |
+|August   | 17      |
+|November | 5 15    |
+
+Plot the probability mass function using the given sample.
+
+# References

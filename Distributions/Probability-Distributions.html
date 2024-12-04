@@ -1523,6 +1523,28 @@ if (window.hljs) {
 
 
 
+<style type="text/css">
+
+div.csl-bib-body { }
+div.csl-entry {
+clear: both;
+}
+.hanging div.csl-entry {
+margin-left:2em;
+text-indent:-2em;
+}
+div.csl-left-margin {
+min-width:2em;
+float:left;
+}
+div.csl-right-inline {
+margin-left:2em;
+padding-left:1em;
+}
+div.csl-indent {
+margin-left: 2em;
+}
+</style>
 
 
 
@@ -1640,8 +1662,16 @@ Sampling</a></li>
 <li><a href="#random-numbers" id="toc-random-numbers">Random
 Numbers</a></li>
 </ul></li>
+<li><a href="#examples" id="toc-examples">Examples</a>
+<ul>
+<li><a href="#bernoulli-probability-model" id="toc-bernoulli-probability-model">Bernoulli probability
+model</a></li>
+<li><a href="#binomial-probability-model" id="toc-binomial-probability-model">Binomial probability model</a></li>
+<li><a href="#poisson-probability-model" id="toc-poisson-probability-model">Poisson probability model</a></li>
+</ul></li>
 </ul></li>
 <li><a href="#exercises" id="toc-exercises">Exercises</a></li>
+<li><a href="#references" id="toc-references">References</a></li>
 </ul>
 </div>
 
@@ -1662,7 +1692,7 @@ simulate such situations using the <code>sample</code> function. For
 example, to draw 5 numbers (randomly!) from the set <code>1:90</code>,
 we can use:</p>
 <pre class="r"><code>sample(1:90, 5)</code></pre>
-<pre><code>## [1] 38  2 90 39 75</code></pre>
+<pre><code>## [1] 70 37 22 11 29</code></pre>
 <p>The first argument, <code>x</code>, is a vector indicating the set to
 sample from, while <code>size</code> specifies the sample size. By
 default, the sample function samples <strong>without
@@ -1672,13 +1702,13 @@ so the sample size cannot exceed the length of the set. To sample
 <code>replace = TRUE</code>. For example, to simulate 10 coin
 tosses:</p>
 <pre class="r"><code>sample(c(&quot;H&quot;, &quot;T&quot;), 10, replace = TRUE)</code></pre>
-<pre><code>##  [1] &quot;H&quot; &quot;T&quot; &quot;T&quot; &quot;T&quot; &quot;H&quot; &quot;T&quot; &quot;T&quot; &quot;H&quot; &quot;T&quot; &quot;T&quot;</code></pre>
+<pre><code>##  [1] &quot;T&quot; &quot;H&quot; &quot;H&quot; &quot;H&quot; &quot;T&quot; &quot;H&quot; &quot;H&quot; &quot;H&quot; &quot;H&quot; &quot;H&quot;</code></pre>
 <p>In a fair coin toss, the events “Heads” and “Tails” are equally
 likely (i.e., each has a probability of <span class="math inline">\(\frac{1}{2}\)</span>). In R, we can also consider
 cases where the events are not equally probable using the
 <code>prob</code> option:</p>
 <pre class="r"><code>sample(c(&quot;H&quot;, &quot;T&quot;), 10, replace = TRUE, prob = c(0.9, 0.1))</code></pre>
-<pre><code>##  [1] &quot;H&quot; &quot;H&quot; &quot;H&quot; &quot;H&quot; &quot;H&quot; &quot;H&quot; &quot;H&quot; &quot;H&quot; &quot;H&quot; &quot;H&quot;</code></pre>
+<pre><code>##  [1] &quot;H&quot; &quot;H&quot; &quot;H&quot; &quot;T&quot; &quot;H&quot; &quot;H&quot; &quot;T&quot; &quot;H&quot; &quot;H&quot; &quot;H&quot;</code></pre>
 <p><strong>Note</strong>: The sum of the values in the prob vector must
 equal 1.</p>
 </div>
@@ -1707,22 +1737,28 @@ elements from 90 using the binomial coefficient: <span class="math display">\[\b
 <h2>Distributions in R</h2>
 <p>Consider independent replications of a given experiment. From a
 probabilistic perspective, we are often less interested in individual
-outcomes (success or failure) and more focused on the total number of
-successes. This result is random and thus described by a random
-variable.</p>
-<p>Random variables are categorized as discrete or continuous.</p>
+outcomes and more focused on the total number of outcomes. This result
+is random and thus described by a random variable.<br />
+<strong>Remark</strong>: A <em>random variable</em> is a real-valued
+function from an outcome space into the real line more generally into
+<span class="math inline">\(R^n\)</span> . The probability law defined
+on the outcome space induces (defines explicitly) a probability model
+for the random variable. It is the basic quantity used in probability
+theory to characterize a probability process. Random variables are
+categorized as discrete or continuous.</p>
 <p>A discrete random variable <span class="math inline">\(X\)</span>
-takes values in a discrete set and is characterized by its probability
+takes values in a finite set and is characterized by its probability
 mass function <span class="math inline">\(f(x) = P(X = x)\)</span> or
 its cumulative distribution function <span class="math inline">\(F(x) =
 P(X \leq x)\)</span>.</p>
-<p>A continuous random variable can take values in <span class="math inline">\(`R`\)</span> and is characterized by its density
-function <span class="math inline">\(f(x)\)</span> and distribution
-function (or cumulative distribution function): <span class="math display">\[F(x) = \int_{-\infty}^x f(x) dx\]</span>
-<code>R</code> includes implementations of major probability
-distributions, both discrete and continuous, as these are central to
-statistical modeling and hypothesis testing (discussed later), replacing
-traditional statistical tables. Examples include:</p>
+<p>A (uni-variate) continuous random variable can take values in the
+real line and is characterized by its density function <span class="math inline">\(f(x)\)</span> and distribution function (or
+cumulative distribution function): <span class="math display">\[F(x) =
+\int_{-\infty}^x f(x) dx\]</span> <code>R</code> includes
+implementations of major probability distributions, both discrete and
+continuous, as these are central to statistical modeling and hypothesis
+testing (discussed later), replacing traditional statistical tables.
+Examples include:</p>
 <table>
 <thead>
 <tr class="header">
@@ -1775,7 +1811,7 @@ generation. By adding a prefix to the distribution name in
 <tbody>
 <tr class="odd">
 <td align="left">d</td>
-<td align="left">Density`</td>
+<td align="left">Density</td>
 </tr>
 <tr class="even">
 <td align="left">p</td>
@@ -1861,12 +1897,95 @@ such that <span class="math inline">\(\Phi(z) = 0.9\)</span>:</p>
 <p>We can generate random numbers as realizations of random
 variables:</p>
 <pre class="r"><code>rnorm(10, mean = 3, sd = 2)</code></pre>
-<pre><code>##  [1] 2.098390 2.660326 3.189899 6.346308 3.255983 5.574975 8.076612 2.920659
-##  [9] 3.645470 2.889197</code></pre>
+<pre><code>##  [1] 6.3825417 2.7822545 0.7063886 3.4558388 3.9936368 2.0187683 0.1097111
+##  [8] 4.4120100 1.9161684 4.5321980</code></pre>
 <pre class="r"><code>rbinom(15, size = 50, prob = 0.2)</code></pre>
-<pre><code>##  [1]  8 11  6  8  8  6  9 12 14 10 10 13  9  4  6</code></pre>
+<pre><code>##  [1] 14  9 11  7 10  9  9  9 12 11 13  7 17 13  6</code></pre>
 <p>Random data is useful for studying mathematical approximations via
 simulation study.</p>
+</div>
+</div>
+<div id="examples" class="section level2">
+<h2>Examples</h2>
+<div id="bernoulli-probability-model" class="section level3">
+<h3>Bernoulli probability model</h3>
+<p><strong>Learning Experiment <span class="citation">(Jog et al.
+1999)</span></strong>: To help establish neural correlates of procedural
+learning, neurons in the striatum of rats are recorded over several days
+as they executed a procedure learning task. In this task, the rat used
+auditory cues to learn which one of two arms of a T-maze to enter in
+order to receive a reward. On each trial, the rat was placed in a
+T-maze. A tone was played. If it was a low tone the animal had to go
+left to receive a reward, whereas if it was a high tone it had to go
+right to obtain its reward. Suppose that on the previous day, the animal
+executed this task 40 times and, in so doing, made 22 correct choices
+and 18 incorrect choices. Before, the start of the 40 trials today, what
+is the probability that the animal will give a correct response on a
+given trial?</p>
+<p>In this problem, there are only two possible outcomes: a correct
+response or an incorrect response. The outcomes are mutually exclusive.
+That is, when one outcome occurs, the other cannot occur. Let <span class="math inline">\(p\)</span> be the probability of a correct
+response.</p>
+<p>The Bernoulli probability model would be a good model for this
+problem. It defines the probability of a correct or incorrect response
+on each trial. Either the quantity</p>
+<pre class="r"><code>p_hat = 22/40</code></pre>
+<p>or <span class="math inline">\(p = 0.5\)</span> would be a reasonable
+estimate (guess) of <span class="math inline">\(p\)</span> for a trial.
+Use of the parameter <code>p_hat</code> would suggest that we expect the
+performance on the trials today to be like the performance on trials
+yesterday. Use of <span class="math inline">\(p = 0.5\)</span> as the
+guess of <span class="math inline">\(p\)</span> for today would indicate
+a belief that performance will be indistinguishable from chance on
+today’s trial.</p>
+<p><em>Exercise</em>: Plot the Bernoulli probability mass function and
+the cumulative distribution.</p>
+</div>
+<div id="binomial-probability-model" class="section level3">
+<h3>Binomial probability model</h3>
+<p>If today we test the rat on the same task and give it 40 trials, and
+we assume that the probability of a correct choice is <span class="math inline">\(p\)</span>, what are the possible outcomes and
+what is the probability of each outcome?</p>
+<p>On each trial, there can be either a correct or an incorrect
+response. Across the 40 trials, there can be any combination of correct
+and incorrect responses such that the sum of correct and incorrect
+responses equals 40. That is, there are <span class="math inline">\(k\)</span> correct responses and <span class="math inline">\(40 - k\)</span> incorrect responses for <span class="math inline">\(k = 0,\ldots, 40\)</span>. If we assume that the
+trials are independent, and that on each trial the probability of a
+correct response is <span class="math inline">\(p\)</span> and the
+probability of an incorrect response is <span class="math inline">\(1-p\)</span> then the probability of this event is
+<span class="math display">\[Pr(k \mbox{ successes}|40 \mbox{ trials}) =
+p^k 1-p)^{40-k}\]</span>.</p>
+<p><em>Exercise</em>: Plot the Bernoulli probability mass function and
+the cumulative distribution.</p>
+</div>
+<div id="poisson-probability-model" class="section level3">
+<h3>Poisson probability model</h3>
+<p><strong>The Quantal Release Hypothesis</strong> for the release of
+acetylcholine at the frog motor neuromuscular junction states that in
+response to stimulation, acetylcholine is released from the motor nerve
+terminal in discrete “packets” or quanta. Normal endplate potentials
+(EPPs) are the result of several hundred quanta. Miniature EPP’s are the
+result of spontaneous release of single quanta. An important corollary
+of the quantal release hypothesis is that there is most likely a large
+population of quanta in the nerve terminal, each one of which has a
+small probability of being released by a nerve impulse. We now know that
+these quanta are packaged in vesicles. For a fixed small time interval
+(fraction of a millisecond) can we compute the probability that a given
+number of quanta or vesicles will be released?</p>
+<p>To study this problem we can formulate a binomial probability model
+in which <span class="math inline">\(N\)</span> is the number of quanta
+or release sites and <span class="math inline">\(p\)</span> is the
+probability of release in a given small time interval. Let us assume
+that the release sites behave independently. This then leads to the
+binomial probability model and hence the probability of observing
+exactly <span class="math inline">\(k\)</span> quanta released in the
+specified small time interval. As a practical matter, as <span class="math inline">\(N\)</span> becomes large, we can approximate this
+calculation by assuming that the probability of release decreases so
+that <span class="math inline">\(N \times p \to \lambda\)</span>. Hence,
+for <span class="math inline">\(N\)</span> sufficiently large, we have
+<span class="math inline">\(Np \approx \lambda\)</span> or <span class="math inline">\(p = \frac{\lambda}{N}\)</span>.</p>
+<p><em>Exercise</em>: Plot the Poisson probability mass function and the
+cumulative distribution.</p>
 </div>
 </div>
 </div>
@@ -1909,6 +2028,62 @@ traditional procedure?</p>
 <p>The toss of a coin can be simulated in R using rbinom instead of
 sample. How exactly can this be done?<br />
 Hint: Simulate 10 tosses of a fair coin using rbinom.</p>
+</div>
+<div id="exercise-5" class="section level4">
+<h4>Exercise 5</h4>
+<p>Suppose that we have collected the birthdays from 16 students in a
+class:</p>
+<table>
+<tbody>
+<tr class="odd">
+<td align="left">January</td>
+<td align="left">29</td>
+</tr>
+<tr class="even">
+<td align="left">February</td>
+<td align="left">17 21 24</td>
+</tr>
+<tr class="odd">
+<td align="left">March</td>
+<td align="left">11 13</td>
+</tr>
+<tr class="even">
+<td align="left">April</td>
+<td align="left">10 27</td>
+</tr>
+<tr class="odd">
+<td align="left">May</td>
+<td align="left">11</td>
+</tr>
+<tr class="even">
+<td align="left">June</td>
+<td align="left">11 28</td>
+</tr>
+<tr class="odd">
+<td align="left">July</td>
+<td align="left">6 25</td>
+</tr>
+<tr class="even">
+<td align="left">August</td>
+<td align="left">17</td>
+</tr>
+<tr class="odd">
+<td align="left">November</td>
+<td align="left">5 15</td>
+</tr>
+</tbody>
+</table>
+<p>Plot the probability mass function using the given sample.</p>
+</div>
+</div>
+<div id="references" class="section level1 unnumbered">
+<h1 class="unnumbered">References</h1>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-jog1999building" class="csl-entry">
+Jog, Mandar S, Yasuo Kubota, Christopher I Connolly, Viveka Hillegaart,
+and Ann M Graybiel. 1999. <span>“Building Neural Representations of
+Habits.”</span> <em>Science</em> 286 (5445): 1745–49.
+</div>
 </div>
 </div>
 

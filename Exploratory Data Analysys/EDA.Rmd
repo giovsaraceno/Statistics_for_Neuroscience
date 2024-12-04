@@ -2,17 +2,272 @@
 title: "Exploratory Data Analysis"
 author: Giovanni Saraceno
 output:
-  html_document:
-    df_print: paged
-    toc: true
   pdf_document:
     keep_tex: true
     toc: true
+  html_document:
+    df_print: paged
+    toc: true
 date: ''
-bibliography: notes.bib
+bibliography: ../notes.bib
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+
+Differently from **inferential statistics** (it will be addressed in the following sections) that deals with uncertainties in estimates and inferences about one or more populations, **Exploratory Data Analysis** aims to reveal interesting patterns and help to prepare the data in the best way for the following analyses. \
+It can be roughly summarized in three big parts:
+
+1. *Structure and summary of data*: To check the type of variables in the data set and compute location indexes (e.g., mean, median), variability indexes (e.g., variance) of the variables of interest
+2. *Exploratory plots*: Histograms, box plots, bar plots, correlogram or scatter plots (e.g., skeweness, outliers)
+3. *Preprocessing step*: Are there any NAs? Missing values? Integer variables to be converted in factors?
+
+We will show the code using classical functions in R base and more recent `tidyverse` and `ggplot2`. 
+```{r}
+library(tidyverse)
+library(dplyr)
+```
+
+We consider the data set `peso.Rdata` defined in the Introduction notes.
+```{r}
+dati <- read.table("../Introduction/peso.txt", sep=";") 
+```
+
+```{r}
+str(dati)
+attach(dati)
+```
+Generally, a data set contains information about a random sample. For each observation (rows), characteristics, also called variables (data set columns), are recorded. This means that the data represent realizations of one or more measurements performed on a sample of individuals.
+
+Variables can be classified as:
+
+*Qualitative (categorical)*: These express characteristics that cannot be measured numerically but allow assigning a sample observation to a category or group. For example, the variables X and Y are categorical. If there is no intrinsic order, the variables are called nominal, whereas if the values can be ordered, they are ordinal.
+*Quantitative (numerical)*: The measurements are expressed as numbers. Numerical data can be continuous, like the variable W representing weight, or discrete, like the variable Z, representing the number of dependents.
+
+## Discrete Variables
+
+Discrete variables can take on a finite number of values. Both qualitative and discrete numerical variables fall into this category. In these cases, it is useful to examine the frequency distribution of all its values. In R, the `table()` function is used:
+```{r}
+table(X)
+table(Y)
+table(Z)
+```
+The same result can be obtained with the `summary()` function:
+```{r}
+summary(X)
+```
+Alternatively, we can calculate relative frequencies by dividing by the total number of observations:
+```{r}
+table(X) / length(X)
+table(Y) / length(Y)
+table(Z) / length(Z)
+```
+The frequency table can be represented using a bar plot:
+```{r}
+plot(table(X) / length(X))
+```
+If there is an intrinsic order, cumulative frequencies can be calculated and visualized:
+```{r}
+Y <- ordered(Y, levels = c("A", "O", "S", "L"))
+cumsum(table(Y) / length(Y))
+plot(ecdf(Y))
+```
+For numerical variables:
+```{r}
+cumsum(table(Z) / length(Z))
+plot(ecdf(Z))
+```
+If we try the same approach for the continuous variable W:
+```{r}
+table(W)
+```
+It provides no useful information because all values are different, reflecting that W is described by a continuous random variable.
+
+## Continuous Variables
+
+Let’s now explore descriptive statistics for continuous numerical variables.
+
+Consider the following example: in a factory assembling devices, three different production line organizations are tested over three days: the current organization, old, and two new ones, new1 and new2. The productivity, measured as the number of completed operations, is recorded for 288 workers and stored in the data set organization.
+```{r}
+organization <- read.table("organizzazione.txt", sep=",")
+```
+
+```{r}
+str(organization)
+attach(organization)
+```
+Start by studying the variable old. Basic statistics include mean, standard deviation, variance, median, minimum, and maximum:
+```{r}
+mean(old)
+sd(old)
+var(old)
+median(old)
+range(old)
+```
+Empirical quantiles can be obtained with the `quantile()` function:
+```{r}
+quantile(old)
+quantile(old, seq(0, 1, 0.1))  # Deciles
+```
+A summary of these key statistics can be obtained using the `summary()` function:
+```{r}
+summary(old)
+summary(organization)
+```
+Frequency distributions of continuous numerical variables can be visualized with histograms:
+```{r}
+hist(old)
+hist(old, freq = FALSE)  # Density
+hist(old, freq = FALSE, breaks = 20)  # Custom intervals
+```
+The Freedman-Diaconis method for choosing interval widths:
+```{r}
+hist(old, freq = FALSE, breaks = "FD")
+```
+Kernel density estimation provides a continuous approximation of the empirical probability density:
+```{r}
+plot(density(old))
+```
+To compare with a known probability density (e.g., normal distribution):
+```{r}
+hist(old, freq = FALSE, breaks = seq(665, 740, 5), ylim = c(0, 0.04))
+curve(dnorm(x, mean = mean(old), sd = sd(old)), col = "red", add = TRUE)
+```
+The empirical cumulative distribution function (CDF):
+```{r}
+plot(ecdf(old))
+curve(pnorm(x, mean = mean(old), sd = sd(old)), add = TRUE, col = "red")
+```
+A QQ-plot compares the data against theoretical quantiles of a normal distribution:
+```{r}
+qqnorm(old)
+qqline(old, col = "red")
+```
+Finally, boxplots summarize distributions visually:
+```{r}
+boxplot(old)
+```
+The three horizontal lines that make up the box in a **boxplot** represent the quartile values (from bottom to top: Q1, median, and Q3). The outer lines (the "whiskers") indicate the minimum and maximum values within a distance of \( 1.5 \times \text{IQ} \) from the nearest quartile, where \( \text{IQ} \) is the interquartile range. Any observation outside this range is considered "extreme," or an **outlier**, and is represented separately. 
+This type of representation can be particularly useful when comparing two or more distributions.
+
+The primary role of the statistics calculated so far is to characterize **location**, such as the mean and median, and **scale**, such as the standard deviation and interquartile range. To these measures, we can add **skewness** and **kurtosis**.
+
+#### Skewness
+
+**Skewness** is a measure of symmetry, or more precisely, the lack of symmetry in a distribution. A distribution is symmetric if it is evenly distributed around its central point. For example, the standard Gaussian distribution is symmetric around the mean \( \mu = 0 \).
+
+Given a sample \( (Y_1, \ldots, Y_N) \), skewness can be calculated as:
+
+\[
+g_1 = \frac{\sum_{i=1}^N (Y_i - \bar{Y})^3 / N}{s^3}
+\]
+
+where \( \bar{Y} \) is the sample mean, \( s \) is the standard deviation, and \( N \) is the number of observations. Note that here \( s \) is calculated by dividing by \( N \) rather than \( N-1 \). This formula is known as the Fisher-Pearson coefficient of skewness. Some software also implements an adjusted version:
+
+\[
+G_1 = \frac{\sqrt{N(N-1)}}{N-2} \cdot \frac{\sum_{i=1}^N (Y_i - \bar{Y})^3 / N}{s^3}
+\]
+
+The skewness of a normal distribution is 0, as is the case for any symmetric distribution. Negative skewness indicates that the observations are more concentrated on the left, while positive skewness indicates a greater concentration on the right, with the right tail being longer than the left.
+
+#### Kurtosis
+
+**Kurtosis** compares the tails of a data distribution to those of a normal distribution, providing information on whether the distribution has heavier or lighter tails. The formula for kurtosis is:
+
+\[
+k_1 = \frac{\sum_{i=1}^N (Y_i - \bar{Y})^4 / N}{s^4}
+\]
+
+where \( \bar{Y} \) and \( s \) are the sample mean and standard deviation, and \( N \) is the number of observations. Again, \( s \) is calculated by dividing by \( N \). The kurtosis of the standard normal distribution is 3. Therefore, a more commonly used definition is:
+
+\[
+k_2 = \frac{\sum_{i=1}^N (Y_i - \bar{Y})^4 / N}{s^4} - 3
+\]
+
+This adjustment makes the kurtosis of the standard normal distribution equal to 0. Positive values (\textit{heavy-tailed}) indicate that the distribution has larger tails than a normal distribution, while negative values (\textit{light-tailed}) indicate smaller tails.
+
+### What is an outlier?
+
+An *outlier* is a value or an observation that is distant from other observations, that is to say, a data point that differs significantly from other data points. Alternatively, outliers can be defined as observations not following the *assumed model*, that is values that deviate so much from other observations one might suppose a different underlying sampling mechanism.
+
+#### How to detect outliers R?
+
+- Descriptive statistics
+- Histogram
+- Boxplots
+- Percentiles
+
+Outlier detection should be an important step during pre-processing, that is the identification of observations which "behave" differently with respect the majority of the data. \
+Sometimes outliers may be due to some errors (measurement, reporting, ...) and then they can be discarded, substitued with `NA` (and then apply a method able to handle `NA`), or substituted with an *estimate* of their value. \
+However, there is the possibility that these "anomalous" observations underline a specific pattern in the data, and then should be included and considered during the statistical analysis. 
+
+### What is a missing value?
+
+A missing value is one whose value is unknown. Missing values are represented in R by the `NA` (not available) symbol. `NA` is a special value whose properties are different from other values. \
+Missing values can be informative, understanding if the missing is due to some reporting error or underline some specific pattern. One possible option during pre-processing would be removing the entire observations (rows) with at least one `NA`, or entire columns, if `NA`'s occur only for specific variables. \
+**Remark**: In both cases we lose information, removing all the related available data. \
+This may be a problem when our sample has few observations. An alternative option is to consider methods, from the literature, specifically designed for handling `NA`.
+
+
+
+## Exercises
+
+### Exercise 6
+Write a function named `kurtosis` to calculate the kurtosis indices \( k_1 \) and \( k_2 \) given in the formulas:
+
+\[
+k_1 = \frac{\sum_{i=1}^N (Y_i - \bar{Y})^4 / N}{s^4}
+\]
+
+\[
+k_2 = \frac{\sum_{i=1}^N (Y_i - \bar{Y})^4 / N}{s^4} - 3
+\]
+
+Write a function named `skewness` is a similar way. 
+
+### Exercise 7
+The data file `fondi.txt` contains the returns of 30 funds categorized into two types labeled `A` and `B`. Analyze the two variables separately. Specifically:
+
+1. Create a table with the minimum, \( Q_1 \), mean, median, \( Q_3 \), maximum, standard deviation, and interquartile range for both variables, rounded to two decimal places.
+2. Plot the density and empirical cumulative distribution functions for each variable separately.
+3. Compute skewness and kurtosis indices.
+4. Compare the two variables using boxplots and empirical cumulative distribution functions after standardizing the data.
+
+Comment on the results.
+
+### Exercise 8
+
+We have 50 subjects (25 with Alzheimer disease and 25 healthy individuals). \
+We analyze the response time (in milliseconds) of the Decoding Test VIPER-NAM: Images will appear on the screen for a short period of time and then disappear. Four letters will then appear, only one of which will correspond to the letter of the object. The user must choose the correct letter as quickly as possible. The response time is collected 10 times for each individual. \
+We also “collect” the Attention Control Scale (ATTC, i.e., self-report scale that is designed to measure attention focusing and attention shifting). The ATTC consists of 20 items (we will consider only one here) that are rated on a four-point Likert scale from 1 (almost never) to 4 (always).
+We also “collect” sex and age for each individual.
+```{r}
+set.seed(1234)
+
+generateData <- function(time){
+  
+  db <- data.frame(Age = sample(c(15:60), 50, replace = TRUE),
+                   Sex = sample(c(0, 1), 50, replace = TRUE),
+                   Group = c(rep(0, 25),rep(1, 25)))
+  
+  db <- db %>% mutate(ATTC1 = ifelse(Group == 1, 
+                                     sample(c(3,4),1), 
+                                     sample(c(1:4),1)),
+                      Response_Time = log(Age) * rgamma(50, shape = 300) +
+                        log(time) * rgamma(50, shape = 300) + 
+                        Sex * rgamma(50, shape = 300) + 
+                        Group *rgamma(50, shape = 300) + 
+                        log(ATTC1) * rgamma(50, shape = 300))
+  
+  return(db)
+}
+
+db <- sapply(c(1:10), function(x) generateData(x), simplify = FALSE)
+db <- bind_rows(db)
+db$Time <- rep(1:10, each = 50)
+db$ID <- rep(1:50, 10)
+```
+
+- Structure and summary of the data
