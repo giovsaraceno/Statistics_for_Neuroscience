@@ -334,9 +334,10 @@ The frequency table can be represented using a bar plot:
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{EDA_files/figure-latex/unnamed-chunk-7-1.pdf} If there
-is an intrinsic order, cumulative frequencies can be calculated and
-visualized:
+\includegraphics{EDA_files/figure-latex/unnamed-chunk-7-1.pdf}
+
+If there is an intrinsic order, cumulative frequencies can be calculated
+and visualized:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -356,8 +357,9 @@ visualized:
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{EDA_files/figure-latex/unnamed-chunk-8-1.pdf} For
-numerical variables:
+\includegraphics{EDA_files/figure-latex/unnamed-chunk-8-1.pdf}
+
+For numerical variables:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -376,8 +378,9 @@ numerical variables:
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{EDA_files/figure-latex/unnamed-chunk-9-1.pdf} If we try
-the same approach for the continuous variable W:
+\includegraphics{EDA_files/figure-latex/unnamed-chunk-9-1.pdf}
+
+If we try the same approach for the continuous variable W:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -588,8 +591,9 @@ visualized with histograms:
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{EDA_files/figure-latex/unnamed-chunk-16-3.pdf} The
-Freedman-Diaconis method for choosing interval widths:
+\includegraphics{EDA_files/figure-latex/unnamed-chunk-16-3.pdf}
+
+The Freedman-Diaconis method for choosing interval widths:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -597,9 +601,10 @@ Freedman-Diaconis method for choosing interval widths:
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{EDA_files/figure-latex/unnamed-chunk-17-1.pdf} Kernel
-density estimation provides a continuous approximation of the empirical
-probability density:
+\includegraphics{EDA_files/figure-latex/unnamed-chunk-17-1.pdf}
+
+Kernel density estimation provides a continuous approximation of the
+empirical probability density:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -607,8 +612,9 @@ probability density:
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{EDA_files/figure-latex/unnamed-chunk-18-1.pdf} To
-compare with a known probability density (e.g., normal distribution):
+\includegraphics{EDA_files/figure-latex/unnamed-chunk-18-1.pdf}
+
+To compare with a known probability density (e.g., normal distribution):
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -617,8 +623,9 @@ compare with a known probability density (e.g., normal distribution):
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{EDA_files/figure-latex/unnamed-chunk-19-1.pdf} The
-empirical cumulative distribution function (CDF):
+\includegraphics{EDA_files/figure-latex/unnamed-chunk-19-1.pdf}
+
+The empirical cumulative distribution function (CDF):
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -627,8 +634,9 @@ empirical cumulative distribution function (CDF):
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{EDA_files/figure-latex/unnamed-chunk-20-1.pdf} A
-QQ-plot compares the data against theoretical quantiles of a normal
+\includegraphics{EDA_files/figure-latex/unnamed-chunk-20-1.pdf}
+
+A QQ-plot compares the data against theoretical quantiles of a normal
 distribution:
 
 \begin{Shaded}
@@ -638,8 +646,9 @@ distribution:
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{EDA_files/figure-latex/unnamed-chunk-21-1.pdf} Finally,
-boxplots summarize distributions visually:
+\includegraphics{EDA_files/figure-latex/unnamed-chunk-21-1.pdf}
+
+Finally, boxplots summarize distributions visually:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -647,8 +656,9 @@ boxplots summarize distributions visually:
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{EDA_files/figure-latex/unnamed-chunk-22-1.pdf} The
-three horizontal lines that make up the box in a \textbf{boxplot}
+\includegraphics{EDA_files/figure-latex/unnamed-chunk-22-1.pdf}
+
+The three horizontal lines that make up the box in a \textbf{boxplot}
 represent the quartile values (from bottom to top: Q1, median, and Q3).
 The outer lines (the ``whiskers'') indicate the minimum and maximum
 values within a distance of \(1.5 \times \text{IQ}\) from the nearest
@@ -718,6 +728,14 @@ equal to 0. Positive values (\textit{heavy-tailed}) indicate that the
 distribution has larger tails than a normal distribution, while negative
 values (\textit{light-tailed}) indicate smaller tails.
 
+\hypertarget{pre-processing}{%
+\subsection{Pre-processing}\label{pre-processing}}
+
+In practice, this step is generally very important and the most
+time-consuming. This step includes: - formatting of variables type, and
+consistent entrie; - dealing with \emph{missing values}; - dealing with
+\emph{outliers}.
+
 \hypertarget{what-is-an-outlier}{%
 \subsubsection{What is an outlier?}\label{what-is-an-outlier}}
 
@@ -771,6 +789,369 @@ This may be a problem when our sample has few observations. An
 alternative option is to consider methods, from the literature,
 specifically designed for handling \texttt{NA}.
 
+\hypertarget{example-the-penguins-data-set}{%
+\subsection{Example: the Penguins data
+set}\label{example-the-penguins-data-set}}
+
+In this example, we consider the exploratory data analysis tools seen
+before using the example \texttt{penguins} data set available in the
+\texttt{palmerpenguins} package.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(palmerpenguins)}
+\FunctionTok{data}\NormalTok{(}\StringTok{"penguins"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+Let's start displaying the structure and summary of the data set.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{str}\NormalTok{(penguins)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## tibble [344 x 8] (S3: tbl_df/tbl/data.frame)
+##  $ species          : Factor w/ 3 levels "Adelie","Chinstrap",..: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ island           : Factor w/ 3 levels "Biscoe","Dream",..: 3 3 3 3 3 3 3 3 3 3 ...
+##  $ bill_length_mm   : num [1:344] 39.1 39.5 40.3 NA 36.7 39.3 38.9 39.2 34.1 42 ...
+##  $ bill_depth_mm    : num [1:344] 18.7 17.4 18 NA 19.3 20.6 17.8 19.6 18.1 20.2 ...
+##  $ flipper_length_mm: int [1:344] 181 186 195 NA 193 190 181 195 193 190 ...
+##  $ body_mass_g      : int [1:344] 3750 3800 3250 NA 3450 3650 3625 4675 3475 4250 ...
+##  $ sex              : Factor w/ 2 levels "female","male": 2 1 1 NA 1 2 1 2 NA NA ...
+##  $ year             : int [1:344] 2007 2007 2007 2007 2007 2007 2007 2007 2007 2007 ...
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{summary}\NormalTok{(penguins)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##       species          island    bill_length_mm  bill_depth_mm  
+##  Adelie   :152   Biscoe   :168   Min.   :32.10   Min.   :13.10  
+##  Chinstrap: 68   Dream    :124   1st Qu.:39.23   1st Qu.:15.60  
+##  Gentoo   :124   Torgersen: 52   Median :44.45   Median :17.30  
+##                                  Mean   :43.92   Mean   :17.15  
+##                                  3rd Qu.:48.50   3rd Qu.:18.70  
+##                                  Max.   :59.60   Max.   :21.50  
+##                                  NA's   :2       NA's   :2      
+##  flipper_length_mm  body_mass_g       sex           year     
+##  Min.   :172.0     Min.   :2700   female:165   Min.   :2007  
+##  1st Qu.:190.0     1st Qu.:3550   male  :168   1st Qu.:2007  
+##  Median :197.0     Median :4050   NA's  : 11   Median :2008  
+##  Mean   :200.9     Mean   :4202                Mean   :2008  
+##  3rd Qu.:213.0     3rd Qu.:4750                3rd Qu.:2009  
+##  Max.   :231.0     Max.   :6300                Max.   :2009  
+##  NA's   :2         NA's   :2
+\end{verbatim}
+
+There are some missing values in the data set. As first step we can
+identfy the observations which contain NA values.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{penguins }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(}\FunctionTok{is.na}\NormalTok{(sex))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 11 x 8
+##    species island    bill_length_mm bill_depth_mm flipper_length_mm body_mass_g
+##    <fct>   <fct>              <dbl>         <dbl>             <int>       <int>
+##  1 Adelie  Torgersen           NA            NA                  NA          NA
+##  2 Adelie  Torgersen           34.1          18.1               193        3475
+##  3 Adelie  Torgersen           42            20.2               190        4250
+##  4 Adelie  Torgersen           37.8          17.1               186        3300
+##  5 Adelie  Torgersen           37.8          17.3               180        3700
+##  6 Adelie  Dream               37.5          18.9               179        2975
+##  7 Gentoo  Biscoe              44.5          14.3               216        4100
+##  8 Gentoo  Biscoe              46.2          14.4               214        4650
+##  9 Gentoo  Biscoe              47.3          13.8               216        4725
+## 10 Gentoo  Biscoe              44.5          15.7               217        4875
+## 11 Gentoo  Biscoe              NA            NA                  NA          NA
+## # i 2 more variables: sex <fct>, year <int>
+\end{verbatim}
+
+There are 2 observations with missing sex, bill length, bill depth,
+flipper length and body mass. We can remove them.\\
+There are additional 9 observations with missing value only in the sex
+variable. These observations could be maintained for the analysis that
+don't include sex. However, for this example we will remove all 11 rows.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{peng\_data }\OtherTok{\textless{}{-}}\NormalTok{ penguins }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(}\SpecialCharTok{!}\FunctionTok{is.na}\NormalTok{(sex))}
+\FunctionTok{summary}\NormalTok{(peng\_data)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##       species          island    bill_length_mm  bill_depth_mm  
+##  Adelie   :146   Biscoe   :163   Min.   :32.10   Min.   :13.10  
+##  Chinstrap: 68   Dream    :123   1st Qu.:39.50   1st Qu.:15.60  
+##  Gentoo   :119   Torgersen: 47   Median :44.50   Median :17.30  
+##                                  Mean   :43.99   Mean   :17.16  
+##                                  3rd Qu.:48.60   3rd Qu.:18.70  
+##                                  Max.   :59.60   Max.   :21.50  
+##  flipper_length_mm  body_mass_g       sex           year     
+##  Min.   :172       Min.   :2700   female:165   Min.   :2007  
+##  1st Qu.:190       1st Qu.:3550   male  :168   1st Qu.:2007  
+##  Median :197       Median :4050                Median :2008  
+##  Mean   :201       Mean   :4207                Mean   :2008  
+##  3rd Qu.:213       3rd Qu.:4775                3rd Qu.:2009  
+##  Max.   :231       Max.   :6300                Max.   :2009
+\end{verbatim}
+
+We can explore the variables singularly.
+
+For the discrete variables, we can display the frequencies
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{p1 }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ peng\_data, }\AttributeTok{mapping =} \FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ species)) }\SpecialCharTok{+} 
+  \FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{fill =}  \StringTok{"green"}\NormalTok{)}
+
+\NormalTok{p2 }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ peng\_data, }\AttributeTok{mapping =} \FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ island)) }\SpecialCharTok{+} 
+  \FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{fill=} \StringTok{"blue"}\NormalTok{)}
+
+\NormalTok{p3 }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ peng\_data, }\AttributeTok{mapping =} \FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ sex)) }\SpecialCharTok{+} 
+  \FunctionTok{geom\_bar}\NormalTok{( }\AttributeTok{fill=} \StringTok{"purple"}\NormalTok{)}
+
+\NormalTok{p4 }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ peng\_data, }\AttributeTok{mapping =} \FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ year)) }\SpecialCharTok{+} 
+  \FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{fill=} \StringTok{"orange"}\NormalTok{)}
+
+\NormalTok{gridExtra}\SpecialCharTok{::}\FunctionTok{grid.arrange}\NormalTok{(p1,p2,p3,p4, }\AttributeTok{nrow=}\DecValTok{2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{EDA_files/figure-latex/unnamed-chunk-27-1.pdf}
+
+or we can combine information
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{p1 }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ peng\_data, }\AttributeTok{mapping =} \FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ species, }\AttributeTok{fill =}\NormalTok{  island)) }\SpecialCharTok{+} 
+  \FunctionTok{geom\_bar}\NormalTok{()}
+
+\NormalTok{p2 }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ peng\_data, }\AttributeTok{mapping =} \FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ island, }\AttributeTok{fill=}\NormalTok{ sex)) }\SpecialCharTok{+} 
+  \FunctionTok{geom\_bar}\NormalTok{()}
+
+\NormalTok{p3 }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ peng\_data, }\AttributeTok{mapping =} \FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ species, }\AttributeTok{fill=}\NormalTok{ sex)) }\SpecialCharTok{+} 
+  \FunctionTok{geom\_bar}\NormalTok{()}
+
+\NormalTok{gridExtra}\SpecialCharTok{::}\FunctionTok{grid.arrange}\NormalTok{(p2,p3,p1, }\AttributeTok{nrow=}\DecValTok{2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{EDA_files/figure-latex/unnamed-chunk-28-1.pdf}
+
+Equivalently we can display the relative frequencies.\\
+For the continuous variables, we can explore the single distributions
+using the histograms
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{p1 }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ peng\_data, }\AttributeTok{mapping =} \FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ bill\_length\_mm)) }\SpecialCharTok{+} 
+  \FunctionTok{geom\_histogram}\NormalTok{(}\AttributeTok{fill =}  \StringTok{"green"}\NormalTok{, }\AttributeTok{bins =} \DecValTok{40}\NormalTok{)}
+
+\NormalTok{p2 }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ peng\_data, }\AttributeTok{mapping =} \FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ bill\_depth\_mm)) }\SpecialCharTok{+} 
+  \FunctionTok{geom\_histogram}\NormalTok{(}\AttributeTok{fill=} \StringTok{"blue"}\NormalTok{, }\AttributeTok{bins =} \DecValTok{40}\NormalTok{)}
+
+\NormalTok{p3 }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ peng\_data, }\AttributeTok{mapping =} \FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ flipper\_length\_mm)) }\SpecialCharTok{+} 
+  \FunctionTok{geom\_histogram}\NormalTok{( }\AttributeTok{fill=} \StringTok{"purple"}\NormalTok{, }\AttributeTok{bins =} \DecValTok{40}\NormalTok{)}
+
+\NormalTok{p4 }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ peng\_data, }\AttributeTok{mapping =} \FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ body\_mass\_g)) }\SpecialCharTok{+} 
+  \FunctionTok{geom\_histogram}\NormalTok{(}\AttributeTok{fill=} \StringTok{"orange"}\NormalTok{, }\AttributeTok{bins =} \DecValTok{40}\NormalTok{)}
+
+\NormalTok{gridExtra}\SpecialCharTok{::}\FunctionTok{grid.arrange}\NormalTok{(p1,p2,p3,p4, }\AttributeTok{nrow=}\DecValTok{2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{EDA_files/figure-latex/unnamed-chunk-29-1.pdf}
+
+The histograms show multimodal distributions for the considered
+variables. We can have additional information by considering the
+\texttt{species}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{p1 }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ peng\_data, }\AttributeTok{mapping =} \FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ bill\_length\_mm, }\AttributeTok{color=}\NormalTok{species, }\AttributeTok{fill =}\NormalTok{  species)) }\SpecialCharTok{+} 
+  \FunctionTok{geom\_histogram}\NormalTok{( }\AttributeTok{bins =} \DecValTok{40}\NormalTok{)}
+
+\NormalTok{p2 }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ peng\_data, }\AttributeTok{mapping =} \FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ bill\_depth\_mm, }\AttributeTok{fill =}\NormalTok{  species)) }\SpecialCharTok{+} 
+  \FunctionTok{geom\_histogram}\NormalTok{(}\AttributeTok{bins =} \DecValTok{40}\NormalTok{)}
+
+\NormalTok{p3 }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ peng\_data, }\AttributeTok{mapping =} \FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ flipper\_length\_mm, }\AttributeTok{color=}\NormalTok{species, }\AttributeTok{fill =}\NormalTok{  species)) }\SpecialCharTok{+} 
+  \FunctionTok{geom\_histogram}\NormalTok{( }\AttributeTok{bins =} \DecValTok{40}\NormalTok{)}
+
+\NormalTok{p4 }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ peng\_data, }\AttributeTok{mapping =} \FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ body\_mass\_g, }\AttributeTok{color=}\NormalTok{species, }\AttributeTok{fill =}\NormalTok{  species)) }\SpecialCharTok{+} 
+  \FunctionTok{geom\_histogram}\NormalTok{(}\AttributeTok{bins =} \DecValTok{40}\NormalTok{)}
+
+\NormalTok{gridExtra}\SpecialCharTok{::}\FunctionTok{grid.arrange}\NormalTok{(p1,p2,p3,p4, }\AttributeTok{nrow=}\DecValTok{2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{EDA_files/figure-latex/unnamed-chunk-30-1.pdf}
+
+Alternatively we can show the estimated density
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ peng\_data, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ bill\_length\_mm, }\AttributeTok{color =}\NormalTok{ species)) }\SpecialCharTok{+} 
+  \FunctionTok{geom\_density}\NormalTok{(}\AttributeTok{size=}\DecValTok{1}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{geom\_histogram}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{y =} \FunctionTok{after\_stat}\NormalTok{(density),}\AttributeTok{fill =}\NormalTok{  species), }\AttributeTok{bins =} \DecValTok{40}\NormalTok{, }\AttributeTok{alpha=}\FloatTok{0.3}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{theme\_classic}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
+## i Please use `linewidth` instead.
+## This warning is displayed once every 8 hours.
+## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+## generated.
+\end{verbatim}
+
+\includegraphics{EDA_files/figure-latex/unnamed-chunk-31-1.pdf}
+
+The distribution of observations from a continuous random variable can
+be also displayed using the boxplot
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ peng\_data, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{y =}\NormalTok{ bill\_length\_mm, }\AttributeTok{fill =}\NormalTok{ species)) }\SpecialCharTok{+} 
+  \FunctionTok{geom\_boxplot}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{theme\_classic}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{EDA_files/figure-latex/unnamed-chunk-32-1.pdf}
+
+We can study the relationship between pairs of continuous variables
+using the scatter-plot
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{p1 }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(peng\_data, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x=}\NormalTok{bill\_length\_mm, }\AttributeTok{y=}\NormalTok{bill\_depth\_mm)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{()}
+\NormalTok{p2 }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(peng\_data, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x=}\NormalTok{bill\_length\_mm, }\AttributeTok{y=}\NormalTok{flipper\_length\_mm)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{()}
+\NormalTok{p3 }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(peng\_data, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x=}\NormalTok{bill\_length\_mm, }\AttributeTok{y=}\NormalTok{body\_mass\_g)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{()}
+\NormalTok{p4 }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(peng\_data, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x=}\NormalTok{bill\_depth\_mm, }\AttributeTok{y=}\NormalTok{flipper\_length\_mm)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{()}
+\NormalTok{p5 }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(peng\_data, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x=}\NormalTok{bill\_depth\_mm, }\AttributeTok{y=}\NormalTok{body\_mass\_g)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{()}
+\NormalTok{p6 }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(peng\_data, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x=}\NormalTok{flipper\_length\_mm, }\AttributeTok{y=}\NormalTok{body\_mass\_g)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{()}
+\NormalTok{gridExtra}\SpecialCharTok{::}\FunctionTok{grid.arrange}\NormalTok{(p1, p2, p3,p4, p5, p6, }\AttributeTok{nrow=}\DecValTok{2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{EDA_files/figure-latex/unnamed-chunk-33-1.pdf}
+
+We can see that data points show different patterns. We can color data
+points by the species
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{p1 }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(peng\_data, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x=}\NormalTok{bill\_length\_mm, }\AttributeTok{y=}\NormalTok{bill\_depth\_mm, }\AttributeTok{color=}\NormalTok{species)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{()}
+\NormalTok{p2 }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(peng\_data, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x=}\NormalTok{bill\_length\_mm, }\AttributeTok{y=}\NormalTok{flipper\_length\_mm, }\AttributeTok{color=}\NormalTok{species)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{()}
+\NormalTok{p3 }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(peng\_data, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x=}\NormalTok{bill\_length\_mm, }\AttributeTok{y=}\NormalTok{body\_mass\_g, }\AttributeTok{color=}\NormalTok{species)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{()}
+\NormalTok{p4 }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(peng\_data, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x=}\NormalTok{bill\_depth\_mm, }\AttributeTok{y=}\NormalTok{flipper\_length\_mm, }\AttributeTok{color=}\NormalTok{species)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{()}
+\NormalTok{p5 }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(peng\_data, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x=}\NormalTok{bill\_depth\_mm, }\AttributeTok{y=}\NormalTok{body\_mass\_g, }\AttributeTok{color=}\NormalTok{species)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{()}
+\NormalTok{p6 }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(peng\_data, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x=}\NormalTok{flipper\_length\_mm, }\AttributeTok{y=}\NormalTok{body\_mass\_g, }\AttributeTok{color=}\NormalTok{species)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{()}
+\NormalTok{gridExtra}\SpecialCharTok{::}\FunctionTok{grid.arrange}\NormalTok{(p1, p2, p3,p4, p5, p6, }\AttributeTok{nrow=}\DecValTok{3}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{EDA_files/figure-latex/unnamed-chunk-34-1.pdf}
+
+We could add also the island and/or sex information to the same plot
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(peng\_data, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x=}\NormalTok{bill\_length\_mm, }\AttributeTok{y=}\NormalTok{bill\_depth\_mm, }\AttributeTok{color=}\NormalTok{species)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{shape=}\NormalTok{sex))}\SpecialCharTok{+}
+  \FunctionTok{facet\_wrap}\NormalTok{(.}\SpecialCharTok{\textasciitilde{}}\NormalTok{island)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{EDA_files/figure-latex/unnamed-chunk-35-1.pdf}
+
+\textbf{Remark}: Plots with several levels of information can be very
+useful when exploring the data set, since they allow to have a general
+view of the data set and the relations among variables. On the other
+hand, when showing results they could appear unclear or overwhelming.
+Think carefully on the aspect of the data set that you want to explore
+or show, then create specific plots.
+
+Finally, we consider the correlation among variables
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{corr\_matrix }\OtherTok{\textless{}{-}} \FunctionTok{round}\NormalTok{(}\FunctionTok{cor}\NormalTok{(peng\_data[,}\DecValTok{3}\SpecialCharTok{:}\DecValTok{6}\NormalTok{]), }\DecValTok{2}\NormalTok{)}
+\NormalTok{corr\_matrix}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                   bill_length_mm bill_depth_mm flipper_length_mm body_mass_g
+## bill_length_mm              1.00         -0.23              0.65        0.59
+## bill_depth_mm              -0.23          1.00             -0.58       -0.47
+## flipper_length_mm           0.65         -0.58              1.00        0.87
+## body_mass_g                 0.59         -0.47              0.87        1.00
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(ggcorrplot)                                             }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: il pacchetto 'ggcorrplot' è stato creato con R versione 4.3.3
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggcorrplot}\NormalTok{(corr\_matrix, }
+           \AttributeTok{type =} \StringTok{"upper"}\NormalTok{, }
+           \AttributeTok{lab =}\NormalTok{ T, }
+           \AttributeTok{lab\_size =} \DecValTok{7}\NormalTok{, }
+           \AttributeTok{outline.col =} \StringTok{"white"}\NormalTok{, }
+           \AttributeTok{colors =} \FunctionTok{c}\NormalTok{(}\StringTok{"tomato2"}\NormalTok{, }\StringTok{"white"}\NormalTok{, }\StringTok{"springgreen3"}\NormalTok{), }
+           \AttributeTok{title =} \StringTok{""}\NormalTok{, }
+           \AttributeTok{ggtheme =}\NormalTok{ theme\_gray, }
+           \AttributeTok{pch.cex =} \DecValTok{30}\NormalTok{, }
+           \AttributeTok{tl.cex =} \DecValTok{20}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{EDA_files/figure-latex/unnamed-chunk-36-1.pdf}
+
+A fast way for visualizing all these plots at once is provided by the
+function \texttt{ggpairs} in the \texttt{GGally} package
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(GGally)}
+\FunctionTok{ggpairs}\NormalTok{(peng\_data[,}\FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{3}\SpecialCharTok{:}\DecValTok{6}\NormalTok{)], }\FunctionTok{aes}\NormalTok{(}\AttributeTok{color=}\NormalTok{species))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{EDA_files/figure-latex/unnamed-chunk-37-1.pdf}
+
 \hypertarget{exercises}{%
 \subsection{Exercises}\label{exercises}}
 
@@ -815,57 +1196,5 @@ the two variables separately. Specifically:
 \end{enumerate}
 
 Comment on the results.
-
-\hypertarget{exercise-8}{%
-\subsubsection{Exercise 8}\label{exercise-8}}
-
-We have 50 subjects (25 with Alzheimer disease and 25 healthy
-individuals).\\
-We analyze the response time (in milliseconds) of the Decoding Test
-VIPER-NAM: Images will appear on the screen for a short period of time
-and then disappear. Four letters will then appear, only one of which
-will correspond to the letter of the object. The user must choose the
-correct letter as quickly as possible. The response time is collected 10
-times for each individual.\\
-We also ``collect'' the Attention Control Scale (ATTC, i.e., self-report
-scale that is designed to measure attention focusing and attention
-shifting). The ATTC consists of 20 items (we will consider only one
-here) that are rated on a four-point Likert scale from 1 (almost never)
-to 4 (always). We also ``collect'' sex and age for each individual.
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\FunctionTok{set.seed}\NormalTok{(}\DecValTok{1234}\NormalTok{)}
-
-\NormalTok{generateData }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(time)\{}
-  
-\NormalTok{  db }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}\AttributeTok{Age =} \FunctionTok{sample}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\DecValTok{15}\SpecialCharTok{:}\DecValTok{60}\NormalTok{), }\DecValTok{50}\NormalTok{, }\AttributeTok{replace =} \ConstantTok{TRUE}\NormalTok{),}
-                   \AttributeTok{Sex =} \FunctionTok{sample}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{), }\DecValTok{50}\NormalTok{, }\AttributeTok{replace =} \ConstantTok{TRUE}\NormalTok{),}
-                   \AttributeTok{Group =} \FunctionTok{c}\NormalTok{(}\FunctionTok{rep}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{25}\NormalTok{),}\FunctionTok{rep}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{25}\NormalTok{)))}
-  
-\NormalTok{  db }\OtherTok{\textless{}{-}}\NormalTok{ db }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{mutate}\NormalTok{(}\AttributeTok{ATTC1 =} \FunctionTok{ifelse}\NormalTok{(Group }\SpecialCharTok{==} \DecValTok{1}\NormalTok{, }
-                                     \FunctionTok{sample}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\DecValTok{3}\NormalTok{,}\DecValTok{4}\NormalTok{),}\DecValTok{1}\NormalTok{), }
-                                     \FunctionTok{sample}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\DecValTok{1}\SpecialCharTok{:}\DecValTok{4}\NormalTok{),}\DecValTok{1}\NormalTok{)),}
-                      \AttributeTok{Response\_Time =} \FunctionTok{log}\NormalTok{(Age) }\SpecialCharTok{*} \FunctionTok{rgamma}\NormalTok{(}\DecValTok{50}\NormalTok{, }\AttributeTok{shape =} \DecValTok{300}\NormalTok{) }\SpecialCharTok{+}
-                        \FunctionTok{log}\NormalTok{(time) }\SpecialCharTok{*} \FunctionTok{rgamma}\NormalTok{(}\DecValTok{50}\NormalTok{, }\AttributeTok{shape =} \DecValTok{300}\NormalTok{) }\SpecialCharTok{+} 
-\NormalTok{                        Sex }\SpecialCharTok{*} \FunctionTok{rgamma}\NormalTok{(}\DecValTok{50}\NormalTok{, }\AttributeTok{shape =} \DecValTok{300}\NormalTok{) }\SpecialCharTok{+} 
-\NormalTok{                        Group }\SpecialCharTok{*}\FunctionTok{rgamma}\NormalTok{(}\DecValTok{50}\NormalTok{, }\AttributeTok{shape =} \DecValTok{300}\NormalTok{) }\SpecialCharTok{+} 
-                        \FunctionTok{log}\NormalTok{(ATTC1) }\SpecialCharTok{*} \FunctionTok{rgamma}\NormalTok{(}\DecValTok{50}\NormalTok{, }\AttributeTok{shape =} \DecValTok{300}\NormalTok{))}
-  
-  \FunctionTok{return}\NormalTok{(db)}
-\NormalTok{\}}
-
-\NormalTok{db }\OtherTok{\textless{}{-}} \FunctionTok{sapply}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\DecValTok{1}\SpecialCharTok{:}\DecValTok{10}\NormalTok{), }\ControlFlowTok{function}\NormalTok{(x) }\FunctionTok{generateData}\NormalTok{(x), }\AttributeTok{simplify =} \ConstantTok{FALSE}\NormalTok{)}
-\NormalTok{db }\OtherTok{\textless{}{-}} \FunctionTok{bind\_rows}\NormalTok{(db)}
-\NormalTok{db}\SpecialCharTok{$}\NormalTok{Time }\OtherTok{\textless{}{-}} \FunctionTok{rep}\NormalTok{(}\DecValTok{1}\SpecialCharTok{:}\DecValTok{10}\NormalTok{, }\AttributeTok{each =} \DecValTok{50}\NormalTok{)}
-\NormalTok{db}\SpecialCharTok{$}\NormalTok{ID }\OtherTok{\textless{}{-}} \FunctionTok{rep}\NormalTok{(}\DecValTok{1}\SpecialCharTok{:}\DecValTok{50}\NormalTok{, }\DecValTok{10}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{itemize}
-\tightlist
-\item
-  Structure and summary of the data
-\end{itemize}
 
 \end{document}

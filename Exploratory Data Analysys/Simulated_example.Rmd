@@ -1,0 +1,206 @@
+---
+title: "Simulated example"
+author: "Giovanni Saraceno"
+output:
+  html_document:
+    df_print: paged
+    toc: true
+  pdf_document:
+    keep_tex: true
+    toc: true
+date: ''
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r, message=FALSE}
+library(dplyr)
+library(ggplot2)
+```
+
+We have 50 subjects (25 with Alzheimer disease and 25 healthy individuals). \
+We analyze the response time (in milliseconds) of the Decoding Test VIPER-NAM: Images will appear on the screen for a short period of time and then disappear. Four letters will then appear, only one of which will correspond to the letter of the object. The user must choose the correct letter as quickly as possible. The response time is collected 10 times for each individual. \
+We also “collect” the Attention Control Scale (ATTC, i.e., self-report scale that is designed to measure attention focusing and attention shifting). The ATTC consists of 20 items (we will consider only one here) that are rated on a four-point Likert scale from 1 (almost never) to 4 (always).
+We also “collect” sex and age for each individual.
+```{r}
+set.seed(1234)
+
+generateData <- function(time){
+  
+  db <- data.frame(Age = sample(c(15:60), 50, replace = TRUE),
+                   Sex = sample(c(0, 1), 50, replace = TRUE),
+                   Group = c(rep(0, 25),rep(1, 25)))
+  
+  db <- db %>% mutate(ATTC1 = ifelse(Group == 1, 
+                                     sample(c(3,4),1), 
+                                     sample(c(1:4),1)),
+                      Response_Time = log(Age) * rgamma(50, shape = 300) +
+                        log(time) * rgamma(50, shape = 300) + 
+                        Sex * rgamma(50, shape = 300) + 
+                        Group *rgamma(50, shape = 300) + 
+                        log(ATTC1) * rgamma(50, shape = 300))
+  
+  return(db)
+}
+
+db <- sapply(c(1:10), function(x) generateData(x), simplify = FALSE)
+db <- bind_rows(db)
+db$Time <- rep(1:10, each = 50)
+db$ID <- rep(1:50, 10)
+```
+
+a. Modify the `Sex` and `Group` variables such that: (i) for `Sex` 0 corresponds to "M" and 1 to "F"; (ii) for `Group` 0 corresponds to "Control" while 1 to "Case.
+```{r}
+db <- db %>%
+  mutate(Sex = ifelse(Sex == 0, "M", "F"),
+         Group = ifelse(Group == "0", "Control", "Case"))
+```
+
+b. Save the data set into a .csv file, remove everything from the environment and reload the data set.
+```{r}
+write.csv(x = db, file = "first_dataframe.csv",row.names = FALSE)
+rm(list=ls())
+db <- read.csv("first_dataframe.csv")
+```
+
+c. Investigate the structure and summary of the data.
+```{r}
+str(db) 
+summary(db)
+```
+
+d. Transform the character variables as factor, so R analyze them as categorical variables.
+```{r}
+db$Group <- as.factor(db$Group) 
+levels(db$Group)
+
+db$Sex <- as.factor(db$Sex)
+levels(db$Sex)
+
+str(db)
+```
+
+e.  Represent the variable `Response_Time` by an histogram.
+```{r}
+ggplot(data = db, 
+       mapping = aes(x = Response_Time)) + 
+  geom_histogram()
+```
+If you want to change the `stat_bin()` you can set the argument `bins = x` inside the `geom_histogram()` function where `x` is the number of bins.
+Note also that there are some visible outliers in the right part of the histogram.
+
+f. Divide the observations by the `Group` variables and fill the histogram with two different colors.
+```{r}
+ggplot() + 
+  geom_histogram(data = db, aes(x = Response_Time,  
+                     fill = Group))+
+  geom_vline(data = db, aes(xintercept = mean(Response_Time, na.rm = TRUE)),
+              linetype="dashed", size=1)+
+  geom_vline(data = db %>% filter(Group =="Case"), 
+             aes(xintercept= mean(Response_Time, na.rm = TRUE), 
+                 colour =Group),
+             linetype="dashed", 
+             size=1)+
+  geom_vline(data = db %>% filter(Group =="Control"),
+             aes(xintercept=mean(Response_Time, na.rm = TRUE), 
+                 colour = Group),
+             linetype="dashed", 
+             size=1)
+```
+ 
+g. Generate the scatter plot between `Response_Time` and `Age`, colored by Group.
+```{r}
+ggplot(data = db, 
+       mapping = aes(x = Age, 
+                     y = Response_Time, 
+                     color = Group)) + 
+  geom_point()
+```
+Generate another scatter dividing also by `Sex`.
+```{r}
+ggplot(data = db, 
+       mapping = aes(x = Age, y = Response_Time, color = Group)) + 
+  geom_point() +
+  facet_wrap(. ~Sex)+
+       scale_colour_discrete(name = "Group", labels = c("Individuals with Alzeihmer disease", "Healthy individuals")) +
+  ylab("Response time")
+```   
+- `facet_wrap(. ~Sex)` - Here we put the variable to divide the scatter plots, i.e., the Sex object. R directly creates two plots one for each level of the Sex factor object.
+- `scale_colour_discrete` - Here We can change the labels of the Group legend. We must specify the name of the object as a string (i.e., Group) and the labels desired as vector.
+- `ylab` - Here We can change the y axis.
+
+h. Generate line plots to understand individual data
+```{r}
+ggplot(data = db %>% filter(Time %in% c(1,5,10)), 
+       mapping = aes(x = Time, y = Response_Time, group = ID, color = Group)) + 
+  geom_line() +
+   geom_point(aes(fill=Group),
+              shape=21)
+```
+- We consider only observations at time 1, 5  and 10
+- `group = ID, color = Group` - Here We group the observations by ID (i.e., one line for each individual) and We color them by `Group`.
+- shape = 21 specify the type of mark (i.e., point) and fill=Group colors the points by Group.
+
+i. Plot the distribution of the `Response_Time` variable across different time points (using boxplots).
+```{r}
+ggplot(data = db, 
+       mapping = aes(x = Response_Time, group = Time)) + 
+  geom_boxplot() + 
+  facet_grid(. ~Group)
+```
+
+- `group = Time` - Here We group the observations by Time,
+- `facet_grid(. ~Group)` - We divide the plots into two graphs, one for the case group and one for the control group. \
+Note the outliers in the right part of the graph.
+
+l. Display the density plot of `Response_Time` colored with respect to the `Group` variable.
+```{r}
+ggplot()  +
+  geom_density(data = db,
+               aes(x = Response_Time, color = Group), size=1) +
+  geom_vline(data = db %>% filter(Group == "Case"), 
+             aes(xintercept = mean(Response_Time, na.rm = TRUE), 
+                 color = Group), size=.8, linetype = "dotted")+
+  geom_vline(data = db %>% filter(Group == "Control"), 
+             aes(xintercept = mean(Response_Time, na.rm = TRUE), 
+                 color = Group), size=.8, linetype = "dotted")+
+  geom_vline(data = db, 
+             aes(xintercept = mean(Response_Time, na.rm = TRUE)), size=.8, linetype = "dashed") +
+    theme_classic()
+```
+
+m. Display the distribution of people with respect to `Sex` and `Group`.
+```{r}
+ggplot(data = db, 
+       mapping = aes(x = Group, fill = Sex)) + 
+  geom_bar()
+```
+
+n. check the correlation between the quantitative variables and Plot the correlation matrix.
+```{r}
+corr_matrix <- round(cor(db[,!(colnames(db) %in% c("Sex", "Group", "ID"))], use = "complete.obs"), 2)
+corr_matrix[lower.tri(corr_matrix)] <- 0
+corr_matrix
+
+library(ggcorrplot)                                             
+ggcorrplot(corr_matrix, 
+           type = "upper", 
+           lab = T, 
+           lab_size = 7, 
+           outline.col = "white", 
+           colors = c("tomato2", "white", "springgreen3"), 
+           title = "", 
+           ggtheme = theme_gray, 
+           pch.cex = 30, 
+           tl.cex = 20)
+```
+
+o. Remove observations with NA
+```{r}
+db <- db %>% filter(!is.na(Response_Time))
+# Alternatively, we can use the basic commands of R:
+#db <- db[!is.na(db$Response_Time),]
+```
+
+p. Identify outlying observations

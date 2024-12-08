@@ -39,6 +39,7 @@ dati <- read.table("../Introduction/peso.txt", sep=";")
 str(dati)
 attach(dati)
 ```
+
 Generally, a data set contains information about a random sample. For each observation (rows), characteristics, also called variables (data set columns), are recorded. This means that the data represent realizations of one or more measurements performed on a sample of individuals.
 
 Variables can be classified as:
@@ -68,17 +69,20 @@ The frequency table can be represented using a bar plot:
 ```{r}
 plot(table(X) / length(X))
 ```
+
 If there is an intrinsic order, cumulative frequencies can be calculated and visualized:
 ```{r}
 Y <- ordered(Y, levels = c("A", "O", "S", "L"))
 cumsum(table(Y) / length(Y))
 plot(ecdf(Y))
 ```
+
 For numerical variables:
 ```{r}
 cumsum(table(Z) / length(Z))
 plot(ecdf(Z))
 ```
+
 If we try the same approach for the continuous variable W:
 ```{r}
 table(W)
@@ -122,33 +126,40 @@ hist(old)
 hist(old, freq = FALSE)  # Density
 hist(old, freq = FALSE, breaks = 20)  # Custom intervals
 ```
+
 The Freedman-Diaconis method for choosing interval widths:
 ```{r}
 hist(old, freq = FALSE, breaks = "FD")
 ```
+
 Kernel density estimation provides a continuous approximation of the empirical probability density:
 ```{r}
 plot(density(old))
 ```
+
 To compare with a known probability density (e.g., normal distribution):
 ```{r}
 hist(old, freq = FALSE, breaks = seq(665, 740, 5), ylim = c(0, 0.04))
 curve(dnorm(x, mean = mean(old), sd = sd(old)), col = "red", add = TRUE)
 ```
+
 The empirical cumulative distribution function (CDF):
 ```{r}
 plot(ecdf(old))
 curve(pnorm(x, mean = mean(old), sd = sd(old)), add = TRUE, col = "red")
 ```
+
 A QQ-plot compares the data against theoretical quantiles of a normal distribution:
 ```{r}
 qqnorm(old)
 qqline(old, col = "red")
 ```
+
 Finally, boxplots summarize distributions visually:
 ```{r}
 boxplot(old)
 ```
+
 The three horizontal lines that make up the box in a **boxplot** represent the quartile values (from bottom to top: Q1, median, and Q3). The outer lines (the "whiskers") indicate the minimum and maximum values within a distance of \( 1.5 \times \text{IQ} \) from the nearest quartile, where \( \text{IQ} \) is the interquartile range. Any observation outside this range is considered "extreme," or an **outlier**, and is represented separately. 
 This type of representation can be particularly useful when comparing two or more distributions.
 
@@ -188,6 +199,14 @@ k_2 = \frac{\sum_{i=1}^N (Y_i - \bar{Y})^4 / N}{s^4} - 3
 
 This adjustment makes the kurtosis of the standard normal distribution equal to 0. Positive values (\textit{heavy-tailed}) indicate that the distribution has larger tails than a normal distribution, while negative values (\textit{light-tailed}) indicate smaller tails.
 
+## Pre-processing
+
+In practice, this step is generally very important and the most time-consuming. This step includes: 
+- formatting of variables type, and consistent entrie; 
+- dealing with *missing values*;
+- dealing with *outliers*.
+
+
 ### What is an outlier?
 
 An *outlier* is a value or an observation that is distant from other observations, that is to say, a data point that differs significantly from other data points. Alternatively, outliers can be defined as observations not following the *assumed model*, that is values that deviate so much from other observations one might suppose a different underlying sampling mechanism.
@@ -210,7 +229,177 @@ Missing values can be informative, understanding if the missing is due to some r
 **Remark**: In both cases we lose information, removing all the related available data. \
 This may be a problem when our sample has few observations. An alternative option is to consider methods, from the literature, specifically designed for handling `NA`.
 
+## Example: the Penguins data set
 
+In this example, we consider the exploratory data analysis tools seen before using the example `penguins` data set available in the `palmerpenguins` package.
+```{r}
+library(palmerpenguins)
+data("penguins")
+```
+Let's start displaying the structure and summary of the data set.
+```{r}
+str(penguins)
+summary(penguins)
+```
+There are some missing values in the data set. As first step we can identfy the observations which contain NA values.
+```{r}
+penguins %>% filter(is.na(sex))
+```
+There are 2 observations with missing sex, bill length, bill depth, flipper length and body mass. We can remove them. \
+There are additional 9 observations with missing value only in the sex variable. These observations could be maintained for the analysis that don't include sex. However, for this example we will remove all 11 rows. 
+```{r}
+peng_data <- penguins %>% filter(!is.na(sex))
+summary(peng_data)
+```
+We can explore the variables singularly. 
+
+For the discrete variables, we can display the frequencies
+```{r}
+p1 <- ggplot(data = peng_data, mapping = aes(x = species)) + 
+  geom_bar(fill =  "green")
+
+p2 <- ggplot(data = peng_data, mapping = aes(x = island)) + 
+  geom_bar(fill= "blue")
+
+p3 <- ggplot(data = peng_data, mapping = aes(x = sex)) + 
+  geom_bar( fill= "purple")
+
+p4 <- ggplot(data = peng_data, mapping = aes(x = year)) + 
+  geom_bar(fill= "orange")
+
+gridExtra::grid.arrange(p1,p2,p3,p4, nrow=2)
+```
+
+or we can combine information 
+```{r}
+p1 <- ggplot(data = peng_data, mapping = aes(x = species, fill =  island)) + 
+  geom_bar()
+
+p2 <- ggplot(data = peng_data, mapping = aes(x = island, fill= sex)) + 
+  geom_bar()
+
+p3 <- ggplot(data = peng_data, mapping = aes(x = species, fill= sex)) + 
+  geom_bar()
+
+gridExtra::grid.arrange(p2,p3,p1, nrow=2)
+```
+
+Equivalently we can display the relative frequencies. \
+For the continuous variables, we can explore the single distributions using the histograms
+```{r}
+p1 <- ggplot(data = peng_data, mapping = aes(x = bill_length_mm)) + 
+  geom_histogram(fill =  "green", bins = 40)
+
+p2 <- ggplot(data = peng_data, mapping = aes(x = bill_depth_mm)) + 
+  geom_histogram(fill= "blue", bins = 40)
+
+p3 <- ggplot(data = peng_data, mapping = aes(x = flipper_length_mm)) + 
+  geom_histogram( fill= "purple", bins = 40)
+
+p4 <- ggplot(data = peng_data, mapping = aes(x = body_mass_g)) + 
+  geom_histogram(fill= "orange", bins = 40)
+
+gridExtra::grid.arrange(p1,p2,p3,p4, nrow=2)
+```
+
+The histograms show multimodal distributions for the considered variables. We can have additional information by considering the `species`
+```{r}
+p1 <- ggplot(data = peng_data, mapping = aes(x = bill_length_mm, color=species, fill =  species)) + 
+  geom_histogram( bins = 40)
+
+p2 <- ggplot(data = peng_data, mapping = aes(x = bill_depth_mm, fill =  species)) + 
+  geom_histogram(bins = 40)
+
+p3 <- ggplot(data = peng_data, mapping = aes(x = flipper_length_mm, color=species, fill =  species)) + 
+  geom_histogram( bins = 40)
+
+p4 <- ggplot(data = peng_data, mapping = aes(x = body_mass_g, color=species, fill =  species)) + 
+  geom_histogram(bins = 40)
+
+gridExtra::grid.arrange(p1,p2,p3,p4, nrow=2)
+```
+
+Alternatively we can show the estimated density
+```{r}
+ggplot(data = peng_data, aes(x = bill_length_mm, color = species)) + 
+  geom_density(size=1) +
+  geom_histogram(aes(y = after_stat(density),fill =  species), bins = 40, alpha=0.3) +
+  theme_classic()
+```   
+
+The distribution of observations from a continuous random variable can be also displayed using the boxplot
+```{r}
+ggplot(data = peng_data, aes(y = bill_length_mm, fill = species)) + 
+  geom_boxplot() +
+  theme_classic()
+```   
+
+We can study the relationship between pairs of continuous variables using the scatter-plot
+```{r}
+p1 <- ggplot(peng_data, aes(x=bill_length_mm, y=bill_depth_mm)) +
+  geom_point()
+p2 <- ggplot(peng_data, aes(x=bill_length_mm, y=flipper_length_mm)) +
+  geom_point()
+p3 <- ggplot(peng_data, aes(x=bill_length_mm, y=body_mass_g)) +
+  geom_point()
+p4 <- ggplot(peng_data, aes(x=bill_depth_mm, y=flipper_length_mm)) +
+  geom_point()
+p5 <- ggplot(peng_data, aes(x=bill_depth_mm, y=body_mass_g)) +
+  geom_point()
+p6 <- ggplot(peng_data, aes(x=flipper_length_mm, y=body_mass_g)) +
+  geom_point()
+gridExtra::grid.arrange(p1, p2, p3,p4, p5, p6, nrow=2)
+```
+
+We can see that data points show different patterns. We can color data points by the species
+```{r}
+p1 <- ggplot(peng_data, aes(x=bill_length_mm, y=bill_depth_mm, color=species)) +
+  geom_point()
+p2 <- ggplot(peng_data, aes(x=bill_length_mm, y=flipper_length_mm, color=species)) +
+  geom_point()
+p3 <- ggplot(peng_data, aes(x=bill_length_mm, y=body_mass_g, color=species)) +
+  geom_point()
+p4 <- ggplot(peng_data, aes(x=bill_depth_mm, y=flipper_length_mm, color=species)) +
+  geom_point()
+p5 <- ggplot(peng_data, aes(x=bill_depth_mm, y=body_mass_g, color=species)) +
+  geom_point()
+p6 <- ggplot(peng_data, aes(x=flipper_length_mm, y=body_mass_g, color=species)) +
+  geom_point()
+gridExtra::grid.arrange(p1, p2, p3,p4, p5, p6, nrow=3)
+```
+
+We could add also the island and/or sex information to the same plot
+```{r}
+ggplot(peng_data, aes(x=bill_length_mm, y=bill_depth_mm, color=species)) +
+  geom_point(aes(shape=sex))+
+  facet_wrap(.~island)
+```
+
+**Remark**: Plots with several levels of information can be very useful when exploring the data set, since they allow to have a general view of the data set and the relations among variables. On the other hand, when showing results they could appear unclear or overwhelming. Think carefully on the aspect of the data set that you want to explore or show, then create specific plots. 
+
+Finally, we consider the correlation among variables
+```{r}
+corr_matrix <- round(cor(peng_data[,3:6]), 2)
+corr_matrix
+
+library(ggcorrplot)                                             
+ggcorrplot(corr_matrix, 
+           type = "upper", 
+           lab = T, 
+           lab_size = 7, 
+           outline.col = "white", 
+           colors = c("tomato2", "white", "springgreen3"), 
+           title = "", 
+           ggtheme = theme_gray, 
+           pch.cex = 30, 
+           tl.cex = 20)
+```
+
+A fast way for visualizing all these plots at once is provided by the function `ggpairs` in the `GGally` package
+```{r, message=FALSE,warning=FALSE}
+library(GGally)
+ggpairs(peng_data[,c(1,3:6)], aes(color=species))
+```
 
 ## Exercises
 
@@ -236,38 +425,3 @@ The data file `fondi.txt` contains the returns of 30 funds categorized into two 
 4. Compare the two variables using boxplots and empirical cumulative distribution functions after standardizing the data.
 
 Comment on the results.
-
-### Exercise 8
-
-We have 50 subjects (25 with Alzheimer disease and 25 healthy individuals). \
-We analyze the response time (in milliseconds) of the Decoding Test VIPER-NAM: Images will appear on the screen for a short period of time and then disappear. Four letters will then appear, only one of which will correspond to the letter of the object. The user must choose the correct letter as quickly as possible. The response time is collected 10 times for each individual. \
-We also “collect” the Attention Control Scale (ATTC, i.e., self-report scale that is designed to measure attention focusing and attention shifting). The ATTC consists of 20 items (we will consider only one here) that are rated on a four-point Likert scale from 1 (almost never) to 4 (always).
-We also “collect” sex and age for each individual.
-```{r}
-set.seed(1234)
-
-generateData <- function(time){
-  
-  db <- data.frame(Age = sample(c(15:60), 50, replace = TRUE),
-                   Sex = sample(c(0, 1), 50, replace = TRUE),
-                   Group = c(rep(0, 25),rep(1, 25)))
-  
-  db <- db %>% mutate(ATTC1 = ifelse(Group == 1, 
-                                     sample(c(3,4),1), 
-                                     sample(c(1:4),1)),
-                      Response_Time = log(Age) * rgamma(50, shape = 300) +
-                        log(time) * rgamma(50, shape = 300) + 
-                        Sex * rgamma(50, shape = 300) + 
-                        Group *rgamma(50, shape = 300) + 
-                        log(ATTC1) * rgamma(50, shape = 300))
-  
-  return(db)
-}
-
-db <- sapply(c(1:10), function(x) generateData(x), simplify = FALSE)
-db <- bind_rows(db)
-db$Time <- rep(1:10, each = 50)
-db$ID <- rep(1:50, 10)
-```
-
-- Structure and summary of the data
