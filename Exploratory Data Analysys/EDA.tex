@@ -1152,6 +1152,26 @@ function \texttt{ggpairs} in the \texttt{GGally} package
 
 \includegraphics{EDA_files/figure-latex/unnamed-chunk-37-1.pdf}
 
+\hypertarget{how-can-i-save-plots}{%
+\subsubsection{How can I save plots?}\label{how-can-i-save-plots}}
+
+There are many ways to save a ggplot:
+
+\begin{itemize}
+\item
+  Go to the bottom right windows of RStudio. Plots \textgreater{} Export
+  \textgreater{} Save as PDF,
+\item
+  Using the \texttt{ggsave("r-graphics.pdf",\ plot\_obj)} function from
+  the \texttt{ggplot2} package, where \texttt{r-graphics.pdf} is the
+  file name to create on disk and \texttt{plot\_obj} is the plot to
+  save.
+\item
+  Open a graphic device, i.e., \texttt{pdf("r-graphics.pdf")}, create
+  and print a plot, and finally close the graphic device using the
+  function \texttt{dev.off()}.
+\end{itemize}
+
 \hypertarget{exercises}{%
 \subsection{Exercises}\label{exercises}}
 

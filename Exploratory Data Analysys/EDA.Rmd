@@ -401,6 +401,16 @@ library(GGally)
 ggpairs(peng_data[,c(1,3:6)], aes(color=species))
 ```
 
+### How can I save plots?
+
+There are many ways to save a ggplot:
+
+- Go to the bottom right windows of RStudio. Plots > Export > Save as PDF,
+
+- Using the `ggsave("r-graphics.pdf", plot_obj)` function from the `ggplot2` package, where `r-graphics.pdf` is the file name to create on disk and `plot_obj` is the plot to save.
+
+- Open a graphic device, i.e., `pdf("r-graphics.pdf")`, create and print a plot, and finally close the graphic device using the function `dev.off()`.
+
 ## Exercises
 
 ### Exercise 6

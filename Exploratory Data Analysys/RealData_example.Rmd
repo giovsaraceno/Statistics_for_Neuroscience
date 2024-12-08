@@ -1,0 +1,207 @@
+---
+title: "Real data example"
+author: "Giovanni Saraceno"
+output:
+  pdf_document:
+    keep_tex: true
+    toc: true
+  html_document:
+    df_print: paged
+    toc: true
+date: ''
+bibliography: ../notes.bib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r, message=FALSE}
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+```
+
+The data comes from the study of @woodworth2017, a replication study of @seligman2005‘s work which had suggested that positive psychology interventions, when delivered via the internet, could increase participants’ happiness and decrease their depression relative to the changes effected by a placebo control.
+
+Their main finding was contrary to that of the original study by @seligman2005. All interventions, including the theoretically-neutral placebo, led to significant increases in happiness and to significant reductions in depression. The effects of the positive-psychology interventions were statistically indistinguishable from those of the placebo. 
+  
+We have two data sets:
+
+- The first data set (`ahi-cesd.csv`) comprises 992 point-in-time records of the self-reported happiness and depression of 295 participants, each assigned to one of four intervention groups, in a study of the effect of web-based positive-psychology interventions on happiness and depression. Each point-in-time measurement consists of a participant’s responses to the 24 items of the **Authentic Happiness Inventory (AHI)** and to the 20
+ items of the **Center for Epidemiological Studies Depression (CES-D)** scale. Measurements were attempted at the time of each participant’s enrollment in the study and on 5 subsequent occasions, the last being approximately 189 days after enrollment.
+
+A *total AHI score* is obtained by summing the scores for the 24 items. A *total CES-D score* is obtained by first reversing the scores of items 4, 8, 12 and 16, and then summing the scores for the 20 items.
+ 
+The `ahi-cesd.csv` contains the following variables:
+
+- `id`: Participant ID.
+- `occasion`: Measurement occasion:
+    0 = Pretest (i.e., at enrollment),
+    1 = Posttest (i.e., 7 days after pretest),
+    2 = 1-week follow-up, (i.e., 14 days after pretest, 7 days after posttest),
+    3 = 1-month follow-up, (i.e., 38 days after pretest, 31 days after posttest),
+    4 = 3-month follow-up, (i.e., 98 days after pretest, 91 days after posttest),
+    5 = 6-month follow-up, (i.e., 189 days after pretest, 182 days after posttest).
+- `elapsed.days`: Time since enrollment measured in fractional days.
+- `intervention`: 3 positive psychology interventions (PPIs), plus 1 control condition:
+    1 = Using signature strengths,
+    2 = Three good things,
+    3 = Gratitude visit,
+    4 = Recording early memories (control condition).
+- `ahi01`-`ahi24`: Responses on 24 AHI items.
+- `cesd01`-`cesd20`: Responses on 20 CES-D items.
+- `ahiTotal`: Total AHI score.
+- `cesdTotal`: Total CES-D score.
+
+```{r}
+dat <- read.csv("ahi-cesd.csv")
+str(dat)
+```
+
+The second dataset (`participant-info.csv`) contains demographic information about the each of the 295 participants. The data are suitable for various time-series analyses and between-group comparisons. It contains the following variables:
+
+- `id`: Participant’s ID.
+- `intervention`: 3 positive psychology interventions (PPIs), plus 1 control condition:
+    1 = Using signature strengths,
+    2 = Three good things,
+    3 = Gratitude visit,
+    4 = Recording early memories (control condition).
+- `sex`: 1 for female, 2 for female
+- `age`: Participant’s age (in years).
+- `educ`: Level of education:
+    1 = Less than Year 12,
+    2 = Year 12,
+    3 = Vocational training,
+    4 = Bachelor’s degree,
+    5 = Postgraduate degree.
+- `income`:
+    1 = below average,
+    2 = average,
+    3 = above average.
+
+Let’s load our data sets:
+```{r}
+dat_part <- read.csv("participant-info.csv")
+str(dat_part)
+```
+
+First of all, we must join the two data sets together. We can use the `tidytable` package (which we already load through the `tidyverse` package). 
+The following options are available to join two data sets:
+
+- Considering one data set we add the other one to the left (i.e., we consider the observations in the first data set): `left_join`
+- Considering one data set we add the other one to the right (i.e., we consider the observations in the second data set): `right_join`
+- Considering both data sets we take the intersection (i.e., observations that are in both data sets in the same time): `inner_join`
+- Considering both data sets we take the union (i.e., observations from all data sets): `full_join`
+
+```{r}
+dat_full <- tidytable::inner_join(dat, dat_part, by = c("id", "intervention"))
+```
+
+After joining two data sets, it is a good practice to check the dimensions of your new data set
+```{r}
+dim(dat)
+dim(dat_part)
+dim(dat_full)
+```
+
+Now, let’s see the structure of the data set:
+```{r}
+str(dat_full)
+```
+
+We must make some preprocessing:
+
+- Transform some variable as factor ones: occasion, intervention, sex, educ, and income
+- Check for NAs and/or outliers
+- Remove the all the ahi and cesd variables except for the total variables.
+```{r}
+ahi_var <- colnames(dat_full)[grepl("ahi", colnames(dat_full))]
+cesd_var <- colnames(dat_full)[grepl("cesd", colnames(dat_full))]
+
+dat_full <- dat_full %>%
+  dplyr::select(-c(ahi_var[-25], cesd_var[-21])) %>%
+  mutate(occasion = as.factor(occasion),
+         intervention = as.factor(intervention),
+         sex = as.factor(sex),
+         educ = as.factor(educ),
+         income = as.factor(income))
+sum(is.na(dat_full))
+summary(dat_full)
+```
+
+There are no missing values.
+
+Now, we can create some exploratory plots. Let’s see the distribution of the total AHI score divided by type of intervention:
+```{r}
+ggplot(dat_full) +
+  geom_boxplot(aes(y = ahiTotal, fill = intervention))
+```
+
+However, we want to see if the total AHI score increases after the intervention. For simplicity, let’s consider the first and second occasions (i.e., occasion equals 0 and 1):
+```{r}
+dat_full %>%
+  filter(occasion %in% c(0,1)) %>%
+  ggplot() +
+  geom_boxplot(aes(y = ahiTotal, x = intervention:occasion, fill = occasion))
+  #geom_boxplot(aes(y = ahiTotal, x = intervention:occasion, fill = occasion))
+```  
+We can note an increment of the total AHI score for all the type of intervetion.
+
+Let’s analyze the total CESD one:
+```{r}
+dat_full %>%
+  filter(occasion %in% c(0,1)) %>%
+  ggplot() +
+  geom_boxplot(aes(y = cesdTotal, x = intervention, fill = occasion))
+```
+
+Here, we can see a reduction of the total CESD score for all type of psychological intervention.
+
+Let's now explore the relationship between the total AHI score and total CESD score
+```{r, message=FALSE}
+ggplot(dat_full) +
+  geom_point(aes(x = ahiTotal, y = cesdTotal)) +
+  geom_smooth(aes(x = ahiTotal, y = cesdTotal), method = 'loess')
+```
+
+So, high values of AHI correspond to low value of CESD in general.
+
+Another interesting point is to see the total AHI score for each timepoint and each participants and the mean for each intervention:
+```{r}
+dat_full %>%
+  group_by(intervention, occasion) %>%
+  mutate(mean_ahiTotal = mean(ahiTotal)) %>%
+  ggplot() + 
+  geom_line(aes(x = occasion, y = ahiTotal, group = id)) +
+    geom_line(aes(x=occasion, 
+           y=mean_ahiTotal, 
+           group=intervention,
+           colour=intervention), linewidth=1.5) 
+
+```
+           
+or considering directly the global mean for each occasion and intervention with corresponding 0.95 confidence intervals:
+
+```{r}
+dat_full %>%
+  group_by(intervention, occasion) %>%
+  mutate(mean_ahiTotal = mean(ahiTotal),
+         sd_ahiTotal=sd(ahiTotal),
+         n_ahiTotal=length(ahiTotal),
+         upper=mean_ahiTotal+2*sd_ahiTotal/sqrt(n_ahiTotal),
+         lower=mean_ahiTotal-2*sd_ahiTotal/sqrt(n_ahiTotal)) %>%
+  ggplot() + 
+      geom_line(aes(x=occasion, 
+             y=mean_ahiTotal, 
+             group=intervention,
+             colour=intervention), size=1.5) +
+    geom_errorbar(aes(x=occasion, ymin=upper, ymax=lower, 
+                      color=intervention), 
+                  width=0.2, linewidth=1,alpha=.5)
+
+```
+
+Let’s save our preprocessed data set as RData file for the next lesson
+```{r}
+save(dat_full, file = "dat_full.RData")
+```
