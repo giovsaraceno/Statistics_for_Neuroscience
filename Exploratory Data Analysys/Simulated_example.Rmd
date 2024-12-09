@@ -2,11 +2,11 @@
 title: "Simulated example"
 author: "Giovanni Saraceno"
 output:
-  html_document:
-    df_print: paged
-    toc: true
   pdf_document:
     keep_tex: true
+    toc: true
+  html_document:
+    df_print: paged
     toc: true
 date: ''
 ---
@@ -26,16 +26,18 @@ We also “collect” sex and age for each individual.
 ```{r}
 set.seed(1234)
 
+Age = sample(c(15:60), 50, replace = TRUE)
+Sex = sample(c(0, 1), 50, replace = TRUE)
+Group = c(rep(0, 25),rep(1, 25))
+
 generateData <- function(time){
   
-  db <- data.frame(Age = sample(c(15:60), 50, replace = TRUE),
-                   Sex = sample(c(0, 1), 50, replace = TRUE),
-                   Group = c(rep(0, 25),rep(1, 25)))
-  
-  db <- db %>% mutate(ATTC1 = ifelse(Group == 1, 
-                                     sample(c(3,4),1), 
-                                     sample(c(1:4),1)),
-                      Response_Time = log(Age) * rgamma(50, shape = 300) +
+  ATTC1 = ifelse(Group == 1, sample(c(3,4),1), sample(c(1:4),1))
+  db <- data.frame(Age = Age,
+                   Sex = Sex,
+                   Group = Group,
+                   ATTC1 = ATTC1,
+                   Response_Time = log(Age) * rgamma(50, shape = 300) +
                         log(time) * rgamma(50, shape = 300) + 
                         Sex * rgamma(50, shape = 300) + 
                         Group *rgamma(50, shape = 300) + 
@@ -85,7 +87,7 @@ e.  Represent the variable `Response_Time` by an histogram.
 ```{r}
 ggplot(data = db, 
        mapping = aes(x = Response_Time)) + 
-  geom_histogram()
+  geom_histogram(bins = 40)
 ```
 If you want to change the `stat_bin()` you can set the argument `bins = x` inside the `geom_histogram()` function where `x` is the number of bins.
 Note also that there are some visible outliers in the right part of the histogram.
@@ -94,7 +96,7 @@ f. Divide the observations by the `Group` variables and fill the histogram with 
 ```{r}
 ggplot() + 
   geom_histogram(data = db, aes(x = Response_Time,  
-                     fill = Group))+
+                     fill = Group), bins=40)+
   geom_vline(data = db, aes(xintercept = mean(Response_Time, na.rm = TRUE)),
               linetype="dashed", size=1)+
   geom_vline(data = db %>% filter(Group =="Case"), 
@@ -120,7 +122,7 @@ ggplot(data = db,
 Generate another scatter dividing also by `Sex`.
 ```{r}
 ggplot(data = db, 
-       mapping = aes(x = Age, y = Response_Time, color = Group)) + 
+       mapping = aes(x = Time, y = Response_Time, color = Group)) + 
   geom_point() +
   facet_wrap(. ~Sex)+
        scale_colour_discrete(name = "Group", labels = c("Individuals with Alzeihmer disease", "Healthy individuals")) +
@@ -145,7 +147,7 @@ ggplot(data = db %>% filter(Time %in% c(1,5,10)),
 i. Plot the distribution of the `Response_Time` variable across different time points (using boxplots).
 ```{r}
 ggplot(data = db, 
-       mapping = aes(x = Response_Time, group = Time)) + 
+       mapping = aes(x = Response_Time, y = Time, group = Time)) + 
   geom_boxplot() + 
   facet_grid(. ~Group)
 ```
@@ -203,4 +205,4 @@ db <- db %>% filter(!is.na(Response_Time))
 #db <- db[!is.na(db$Response_Time),]
 ```
 
-p. Identify outlying observations
+p. Ideas for other plots?

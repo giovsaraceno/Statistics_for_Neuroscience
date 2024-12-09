@@ -2,11 +2,11 @@
 title: "Real data example"
 author: "Giovanni Saraceno"
 output:
-  pdf_document:
-    keep_tex: true
-    toc: true
   html_document:
     df_print: paged
+    toc: true
+  pdf_document:
+    keep_tex: true
     toc: true
 date: ''
 bibliography: ../notes.bib
@@ -66,7 +66,7 @@ The second dataset (`participant-info.csv`) contains demographic information abo
     2 = Three good things,
     3 = Gratitude visit,
     4 = Recording early memories (control condition).
-- `sex`: 1 for female, 2 for female
+- `sex`: 1 for female, 2 for male
 - `age`: Participant’s age (in years).
 - `educ`: Level of education:
     1 = Less than Year 12,
