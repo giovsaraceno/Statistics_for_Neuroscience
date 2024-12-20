@@ -1,0 +1,165 @@
+---
+title: "Parkinson data - I"
+author: "Giovanni Saraceno"
+output:
+  pdf_document:
+    keep_tex: true
+    toc: true
+  html_document:
+    df_print: paged
+    toc: true
+date: ''
+bibliography: ../notes.bib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+```
+
+We consider the data set related to the study in @tsanas2009accurate. 
+Data can be found at [https:// archive.ics.uci.edu/ ml/ datasets/ Parkinsons+Telemonitoring](https:// archive.ics.uci.edu/ ml/ datasets/ Parkinsons+Telemonitoring). 
+
+We start loading the data.
+```{r}
+dat <- read.csv('parkinsons_updrs.data', he = TRUE, sep = ',')
+str(dat)
+```
+
+#### Description of the variables
+
+- subject# - Integer that uniquely identifies each subject
+- `age` - Subject age
+- `sex` - Subject gender ‘0’ - male, ‘1’ - female
+- `test_time` - Time since recruitment into the trial. The integer part is the number of days since
+recruitment.
+- `motor_UPDRS` - Clinician’s motor UPDRS score, linearly interpolated
+- `total_UPDRS` - Clinician’s total UPDRS score, linearly interpolated
+- `Jitter`(%), `Jitter(Abs)`, `Jitter:RAP`, `Jitter:PPQ5`, `Jitter:DDP` - Several measures of variation in fundamental frequency
+- `Shimmer`, `Shimmer(dB)`, `Shimmer:APQ3`, `Shimmer:APQ5`, `Shimmer:APQ11`, `Shimmer:DDA` - Several
+measures of variation in amplitude 
+- `NHR`, `HNR` - Two measures of ratio of noise to tonal components in the voice
+- `RPDE` - A nonlinear dynamical complexity measure
+- `DFA` - Signal fractal scaling exponent
+- `PPE` - A nonlinear measure of fundamental frequency variation
+
+```{r}
+str(dat)
+```
+
+#### Data cleaning
+
+```{r}
+dat$subject. <- as.factor(dat$subject.)
+dat$sex <- ifelse(dat$sex == 1, 'F', 'M')
+dat$sex <- as.factor(dat$sex)
+```
+
+#### Descriptive analysis
+
+Let’s have a look at a brief descriptive summary of all the variables
+```{r}
+summary(dat)
+```
+
+We want to check whether NAs are present.
+```{r}
+colSums(is.na(dat))
+```
+
+We can also check the variance of each variable, in order to look for ‘almost’ constant variable (variance very
+close to zero).
+```{r}
+apply(dat, 2, function(x) var(x))
+```
+
+We can now investigates the variables in details. We can start with the categorical variables and in relation to `total_UPDRS` since it is our variable of interest. \
+We start with `subject`
+```{r}
+ggplot(dat, aes(x=subject.)) +
+  geom_bar() + 
+  theme_minimal()
+```
+
+We have different number of measurements fo the subjects. 
+```{r}
+ggplot(dat, aes(x = subject., y = total_UPDRS)) +
+  geom_point() + 
+  theme_minimal()
+```
+
+It is useful also to explore the sex variable
+```{r}
+dat %>% group_by(sex) %>% summarise(n = n())
+ggplot(dat, aes(x = sex, y = total_UPDRS)) +
+  geom_boxplot() + 
+  theme_minimal()
+```
+
+Now let's look at *age*
+```{r}
+dat %>% group_by(age) %>% summarise(n = n())
+ggplot(dat, aes(x = age)) +
+  geom_bar() + 
+  theme_minimal()
+ggplot(dat, aes(x = age, y = total_UPDRS)) +
+  geom_point() + 
+  theme_minimal()
+```
+
+
+There is also the variable that indicates the time at which the data are collected for each subject. Let us look at the values of `total_UPDRS` in time, grouped by subject and colored by sex
+```{r}
+ggplot(dat, aes(x = test_time, y = total_UPDRS, group = subject., col=sex)) + 
+  geom_line() +
+  geom_point() +
+  theme_minimal()
+```
+or by age
+```{r}
+ggplot(dat, aes(x = test_time, y = total_UPDRS, group = subject., col=age)) + 
+  geom_line() +
+  geom_point() +
+  theme_minimal()
+```
+
+Consider now the covariates
+```{r, message=FALSE}
+library(reshape2)
+dat_dens <- melt(dat[, 7:22])
+ggplot(dat_dens, aes(x = value)) + 
+  geom_histogram(aes(y=..density..), bins=40) +
+  geom_density(color="red", linetype="dashed") +
+  facet_wrap(~ variable, ncol = 4, scales = 'free') +
+  theme_bw() +
+  xlab("")
+```
+
+We can see that `HNR` and `RPDE` are bell-shaped, while `DFA` seems to be bi-modal. \
+We can continue computing the correlation of these variables with the `total_UPDRS`
+```{r}
+apply(dat[, 7:22], 2, function(x) cor(dat$total_UPDRS, x, method = 'spearman'))
+```
+and the corresponding scatter plots
+```{r}
+dat_dens$y <- rep(dat$total_UPDRS, length(7:22))
+ggplot(dat_dens, aes(x = value, y = y)) + 
+  geom_point(size = 1) +
+  facet_wrap(~ variable, ncol = 4, scales = 'free') +
+  theme_bw()
+```
+
+Finally we compute the correlations among the covariates
+```{r, warning=FALSE}
+cor_cov <- cor(dat[, 7:22], method = 'spearman')
+library(corrplot)
+corrplot(cor_cov)
+corrplot.mixed(cor_cov, tl.col = 'black', insig = 'blank', tl.pos = 'lt', number.cex = 0.5)
+```
+
+
+#### References

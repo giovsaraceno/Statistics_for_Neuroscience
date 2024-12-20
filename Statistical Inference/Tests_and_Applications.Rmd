@@ -1,0 +1,524 @@
+---
+title: "Additional tools"
+author: "Giovanni Saraceno"
+output:
+  pdf_document:
+    keep_tex: true
+    toc: true
+  html_document:
+    df_print: paged
+    toc: true
+date: ''
+bibliography: ../notes.bib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+```
+
+## Assumptions in hypothesis testing
+
+The methods for computing the confidence intervals and hypothesis testing via the t-test are correct assuming that the variable under study follows a normal distribution. However, in practice it can happen that the frequency distribution does not follow a normal distribution or that the variances of groups are not equal. Hence, it is fundamental in practice to check that data satisfy this assumption. In general, we can list the following possible approaches.
+
+- If the sample size is sufficiently large and the violations of hypothesis are not extreme, the statistical procedures could be still applied and give reasonable results. Note that this is not suggesting to blindly ignore the violations of assumptions.
+- Transformations of variables: applying some function to the data can satisfy the assumptions (logaritmic, arcsin, square root, inverse, ...).
+- *Non-parameteric* methods: these methods do not require model assumptions, such as the normality assumtion. 
+
+### Normality assumption 
+
+Consider the `penguin` data set
+```{r}
+library(palmerpenguins)
+data(penguins)
+str(penguins)
+```
+Consider that we want to compare the bill length of penguins from the species "Adelie" and "Gentoo", assuming that they have equal variance. 
+```{r}
+id_a <- which(penguins$species=="Adelie" & !is.na(penguins$bill_length_mm))
+mu_a <- mean(penguins$bill_length_mm[id_a], na.rm = TRUE)
+sd_a <- sd(penguins$bill_length_mm[id_a], na.rm = TRUE)
+id_g <- which(penguins$species=="Gentoo"& !is.na(penguins$bill_length_mm))
+mu_g <- mean(penguins$bill_length_mm[id_g], na.rm = TRUE)
+sd_g <- sd(penguins$bill_length_mm[id_g], na.rm = TRUE)
+print(paste0("Adelie: ",mu_a, " (", sd_a, ")"))
+print(paste0("Chinstrap: ", mu_g, " (", sd_g, ")"))
+```
+In this case, it is appropriate to perform a t.test considering as null hypothesis $H_0: \mu_A = \mu_C$ versus $H_0: \mu_A \not= \mu_C$. This test assumes that the two populations are normally distributed. 
+```{r}
+adelie <- penguins$bill_length_mm[id_a]
+gentoo <- penguins$bill_length_mm[id_g]
+```
+In order to evaluate the normality assumption we can investigate the distribution of data using graphical tools, such as boxplots and histograms, to verify that there are no departures from the normality, such as asymmetry, bimodality or presence of outliers.
+```{r}
+n_a <- length(adelie)
+p1 <- ggplot(mapping= aes(x=adelie))+
+  geom_histogram(bins = 40) + 
+  geom_vline(xintercept = mu_a, color="red", linetype="dashed")
+p2 <- ggplot(mapping= aes(y=adelie))+
+  geom_boxplot(outliers = TRUE)
+gridExtra::grid.arrange(p1, p2, nrow=1)
+```
+The distribution of `adelie` seems symmetric around the mean and the median, and unimodal. From the boxplot no outliers are clearly visible. Additionally, we can compare the sample quantiles with the quantiles of the normal distribution.
+```{r}
+qqnorm(adelie, plot.it = TRUE)
+qqline(adelie, col="red")
+```
+```{r}
+ggplot(mapping = aes(sample=adelie)) + 
+  geom_qq()+
+  geom_qq_line(color="red")
+
+```
+We have added the line of theoretical quantile-quantile plot. The data is approximately normal, as the points largely follow the qqline. There are minor deviations at the tails and there are no extreme points (outliers) far away from the line. Finally, we can also perform a statistical test with null hypothesus $H_0$: the sample follows a normal distribution. Testing is data points followsì a specific distribution is referred to as *Goodness-of-fit* testing. One of the most used method for testing normality is the *Shapiro-Wilk* test.
+```{r}
+shapiro.test(adelie)
+```
+The obtained p-value corroborates the previous conclusions.
+
+> Test for normality shoul be used with caution. A low sample size could not provide enough evidence for rejecting the null hypothesis, even if data are not normally distributed. On the other side, a very large sample size can reject the null hypothesis even in the cases where the deviation from the normal distribution is not so large. 
+
+We can do the same for the `gentoo` sample.
+```{r}
+p1 <- ggplot(mapping= aes(x=gentoo))+
+  geom_histogram(bins = 40) + 
+  geom_vline(xintercept = mu_g, color="red", linetype="dashed")
+p2 <- ggplot(mapping= aes(y=gentoo))+
+  geom_boxplot(outliers = TRUE)
+gridExtra::grid.arrange(p1, p2, nrow=1)
+```
+The distribution of `gentoo` seems symmetric around the mean and the median, and unimodal. From the boxplot one outlier is displayed on the right tail of the distribution. The havier right tail is also suggested by the histogram. Additionally, we compare the sample quantiles with the quantiles of the normal distribution.
+```{r}
+qqnorm(gentoo, plot.it = TRUE)
+qqline(gentoo, col="red")
+```
+```{r}
+ggplot(mapping = aes(sample=gentoo)) + 
+  geom_qq()+
+  geom_qq_line(color="red")
+```
+The deviations in the tails suggest that the data has heavier tails. The extreme deviations on both ends could be indicative of outliers or values that are unusually large/small relative to what is expected under normality. Finally, we can also perform the Shapiro-Wilk test.
+```{r}
+shapiro.test(gentoo)
+```
+Considering the 0.05 confidence level used for computing the test, the obtained p-value corroborates the previous conclusions, suggesting to reject the null hypothesis.
+Notice that, if we remove the outlying oservation, the sample is more likely  following a normal distribution. 
+```{r}
+gentoo0 <- gentoo[-which.max(gentoo)]
+ggplot(mapping = aes(sample=gentoo0)) + 
+  geom_qq()+
+  geom_qq_line(color="red")
+shapiro.test(gentoo0)
+```
+Finally, we apply the t.test for comparing their mean
+```{r}
+t.test(adelie, gentoo, var.equal = TRUE, paired = FALSE)
+```
+Here, the difference between is clearly different from zero and this difference is statistically significant. In this case, the presence of the outlier does not affect the result. 
+
+### Transformations of data
+
+One possible technique is to transform data points to improve the goodness of fit to the assumed distribution. Notice that it is not a good idea to try several transformations for findng the one that has the best fit with the model assumptions. 
+
+### Non-parametric approach 
+
+In case of violations of the model assumption, we can use non-parametric tests, which have less assumptions on the distributions of the variables. For example the *permutation-based test* (with the function `independence_test` from the `coin` package) and the *sign test* are alternatives to the t.test for the mean. \
+When we want to compare two means and the normality assumptions are not satisfied, we can use the *Mann-Whitney $U$ test* which only assumes independent samples. 
+```{r}
+wilcox.test(adelie, gentoo)
+```
+
+### Robust statistics
+
+We have seen that assumptions are often violated due to the presence of non-normality or outliers and then tests canbecome unreliable. To address these limitations, robust alternatives have been developed in order to provide more accurate p-values and confidence intervals while being less sensitive to violations of model assumptions.
+Notice that non-parametric tests, even if not explicitly robust, offer alternatives that avoid the need for normality assumptions.
+
+For comparing the means of two groups we can use the *Yuen's trimmed-mean test* (trims a percentage of extreme values from both tails before performing a t-test)
+```{r}
+library(WRS2)
+dat <- data.frame(bill_length = c(adelie,gentoo), species =rep(c(1,0),times=c(151,123)))
+yuen(bill_length ~ species,data =  dat, tr = 0.2) # tr = trimming percentage
+```
+or the *permutation test*.
+```{r}
+coin::independence_test(bill_length ~ species, dat)
+```
+
+### How to choose the appropriate test?
+
+The tests used along these notes are not intended to be the suggested ones in practice. Mostly are the firstly introduced methods in statistical hypothesis testing and are considered here to show the reasoning behind the translation of the research question to a null hypothesis and how the confidence intervals and statistical tests can help in making some statistically significant inference on the data. \  
+In order to choose the appropriate test to use in our analysis, it is important to consider the following steps.
+
+- Use the graphical methods introduced in the Exploratory analysis section in order to *know* your data.
+
+|**Type of data** | **graphical method**|
+|-----------------|---------------------|
+| Categorical      | barplot             |
+| Numerical        | Histogram           |
+|                  | boxplot             |
+|                  | density             |
+| Two Categorical  | Grouped Barplot     |
+|                  | Contingency table   |
+| One Numerical and one categorical | Grouped Histograms |
+|                  | Grouped Boxplots    |
+| Two Numerical    | Scatter plot        |
+|                  | Line plot           |
+
+- Are you studying a single variable or the association of two or more variables?
+- The considered variables are Categorical or Numerical?
+- What is the research question that we are investigating? It is crucial to define the correct null hypothesis for understanding the appropriate tests.
+- What are the assumptions of the available tests? The assumptions of the method must be satisfied by our data to obtain reliable results. 
+- Search the literature for the most innovative procedures that show the best fit with the complexities in the data in hand. Do not limit yourself to the use of standard and well-known methods. In the statistical literature, new methods are developed to address specific situations, to be robust against model mispecifications or overcome sources of errors in specific applications. Know the performance in terms of level (significance level $\alpha$) and power of the test in different situations.
+
+## Analysis of Variance (ANOVA)
+
+In this section, we consider the case where we have two random variables, $X$ and $Y$, where one of them, say $X$ is qualitative. In this case, we want to compare the conditional distributions, or in other words we want to verify if observations ($Y$) in different groups (levels of $X$) are different on average. The Analysis of Variance, or ANOVA, is the most famous tool for evaluating simultaneously the equality of means of $k$ groups. In general, we say that $Y$ is independent on average from $X$ when $X$ does not influence the mean of $Y$. Hence, we test
+\[
+\begin{cases}
+H_0 &: \mu_1 = \ldots = \mu_k \\ 
+H_1 &: \text{at least one }\mu_i\text{ is different from the others}
+\end{cases}
+\]
+
+Let us consider the following example. \
+To determine whether and to what extent the type of meat used to prepare hot dogs influences their calorie content, the calories of 54 packages from different brands were measured. These data are stored in the data frame hot_dog:
+```{r}
+load("hotdog.Rdata")
+colnames(hot_dog) <- c("meat", "calories")
+summary(hot_dog)
+```
+First, we compute the main descriptive statistics and represent the distributions, based on the type of meat, using boxplots. In this dataset, we have a single numeric vector, calories, whose elements are grouped according to the levels of the factor variable meat. We can use the by function, specifying the numeric vector, the grouping factor, and the operation to apply. For example
+```{r}
+attach(hot_dog)
+group_sizes <- by(calories, meat, length)
+n <- sum(group_sizes)
+sigma2 <- function(x){
+  v <- mean((x - mean(x))^2)
+  return(v)
+}
+means <- by(calories, meat, mean)
+variances <- by(calories, meat, sigma2)
+print(cbind(means, variances))
+```
+The overall mean and variance are
+```{r}
+mu <- mean(calories)
+v <- sigma2(calories)
+print(c(mu, v))
+```
+The total number of groups $k$ is 
+```{r}
+k <- length(levels(meat))
+k
+detach(hot_dog)
+```
+The boxplot for calorie distributions by meat type can be plotted using
+```{r}
+boxplot(calories ~ meat, hot_dog)
+ggplot(hot_dog, aes(x=meat,y=calories,fill=meat))+
+  geom_boxplot()
+```
+
+Note that the custom function `sigma2` computes the variance as the mean of squared deviations (dividing by $n$, not $n-1$ as in the sample variance). The values and the plot suggest a clear difference for the third group (Poultry). To test if this difference is significant, we conduct a hypothesis test with $H_0: \mu_1 = \mu_2 = \mu_3$.
+
+We compute the sum of squared deviations from the group means (SS error) and the sum of squared deviations of group means from the overall mean (SS groups)
+\[
+  SS_{\text{err}} = \frac{1}{n} \sum_{i=1}^k \sum_{j=1}^{n_i} (x_{ij} - \mu_i)^2, \quad 
+  SS_{\text{groups}} = \frac{1}{n} \sum_{i=1}^k n_i (\mu_i - \mu)^2
+  \]
+```{r}
+sse <- sum(group_sizes * variances)
+ssg <- sum(group_sizes * (means - mu)^2)
+print(c(ssg, sse))
+```
+
+#### Variance Decomposition
+
+These two quantities are also known as within-group variance (SS error) and between-group variance ( SS groups). Note that
+\[
+  \frac{SS_{\text{err}}}{n} + \frac{SS_{\text{groups}}}{n} = S^2
+  \]
+
+where $S^2$ is the total variance of all observations with respect to the overall mean.
+```{r}
+print(c(sse/n + ssg/n, v))
+```
+This result shows that dividing the data into groups explains part of the variability. Specifically, the total variance can be decomposed into a portion that describes differences between group means and a portion describing differences within groups.
+
+#### Pearson Correlation Ratio
+Using these quantities, we can calculate the Pearson correlation ratio
+```{r}
+eta2 <- (ssg / n) / v
+eta2
+```
+In general, it ranges between 0 and 1, where 0 indicates independence (the mean does not depend on grouping), and 1 indicates perfect dependence.
+
+Normalizing the sums, we compute
+\[
+  MS_{\text{err}} = \frac{SS_{\text{err}}}{n - k}, \quad MS_{\text{groups}} = \frac{SS_{\text{groups}}}{k - 1}.
+  \]
+Then, the test statistic is
+$$F=\frac{MS_{\text{groups}}}{MS_{\text{err}}}.$$
+Under $H_0$ this follows an $F$-distribution with $k-1$ and $n-k$ degrees of freedom. We reject $H_0$ if the observed $F$-value exceeds the $(1-\alpha)$-quantile of the $F$-distribution for $\alpha=0.05$.
+```{r}
+alpha <- 0.05
+msg <- ssg / (k - 1)
+mse <- sse / (n - k)
+print(c(msg, mse))
+f_oss <- msg / mse
+pf(f_oss, k - 1, n - k, lower.tail = FALSE)
+```
+
+In R, ANOVA can be performed directly using the `aov` function:
+```{r}
+model <- aov(calories ~ meat, hot_dog)
+model
+summary(model)
+```
+
+For the $F$-test results, use
+```{r}
+anova(model)
+```
+
+In practice, the `aov` function is a special case of the `lm` function, which can be used in the same way.
+```{r}
+attach(hot_dog)
+modello2 <- lm(calories ~ meat, hot_dog)
+anova(modello2)
+```
+
+Using the `anova` function, we obtain the same results, but the `modello2` object contains more information. If the test indicates that there is a difference between groups, we are naturally interested in identifying where this difference lies. For this purpose, pairwise comparisons between the groups are useful. These can be extracted using the `summary` function
+```{r}
+summary(modello2)
+```
+The aspect of multiple comparisons is not treated here. 
+
+A non parametric alternative is the *Kruskal-Wallis test* with the assumption that the distribution of the variable must be the same in each population. 
+```{r}
+kruskal.test(calories~meat, hot_dog)
+```
+
+### Hypothesis Verification
+
+The ANOVA test assumes that the variable is normally distributed in each of the $k$ populations and the variance is the same in all the populations.
+So it is important to verify whether this assumption holds. Since we do not know the true variances of each group, we can perform a test to determine (with a given confidence level) whether the assumption is satisfied. For this, Bartlett's test can be used, where the null hypothesis corresponds to the equality of variances
+```{r}
+bartlett.test(calories~meat)
+```
+```{r}
+detach(hot_dog)
+```
+
+**Note**: It is crucial to verify that the assumptions hold for the given study. Otherwise, the test results are meaningless!
+
+## Correlation and Regression Analysis
+
+In this section, we consider situations where we want to describe the relationship between two continuous variables.
+
+Let \(X\) and \(Y\) be two continuous random variables with samples \((x_1, \ldots, x_n)\) and \((y_1, \ldots, y_n)\), respectively. To assess the relationship between these two variables, we can start with a scatter plot, which displays the points \((x_i, y_i)\) on a Cartesian plane. Consider the following example:
+
+A real estate agent wants to predict the monthly rent of apartments based on their size. For this purpose, they conduct a survey and collect data on 25 apartments in a residential area (rent in dollars, size in square feet).
+
+```{r}
+data <- data.frame(
+  rent = c(950, 1600, 1200, 1500, 950, 1700, 1650, 935, 875, 1150, 1400, 1650, 
+           2300, 1800, 1400, 1450, 1100, 1700, 1200, 1150, 1600, 1650, 1200, 
+           800, 1750),
+  size = c(850, 1450, 1085, 1232, 718, 1485, 1136, 726, 700, 956, 1100, 1285, 
+           1985, 1369, 1175, 1225, 1245, 1259, 1150, 896, 1361, 1040, 755, 1000, 
+           1200)
+)
+
+# Scatterplot
+plot(data$size, data$rent, main = "Scatterplot of Rent vs. Size",
+     xlab = "Size (sq ft)", ylab = "Rent ($)")
+
+ggplot(data, aes(x=size, y=rent)) + 
+  geom_point() + 
+  xlab("Size (sq ft)") + 
+  ylab("Rent ($)") +
+  title("Scatterplot of Rent vs. Size") +
+  theme_minimal()
+```
+
+The scatterplot visually inspects whether the points exhibit any pattern or regularity. \
+**Remark**: The order of the variables in the scatter plot, i.e., which one is $X$ and which one is $Y$, is crucial in regression analysis. This choice depends on what we want to study or verify. In the example, the agent wants to predict rent based on size, so `size` will be the *independent variable* $X$, and `rent` will be the *dependent variable* $Y$.
+
+The relationship between the two variables can be quantified using the *correlation coefficient* $\rho$. In general, the correlation coefficient is a measure of association between variables that ranges from -1 to 1. Values close to -1 or 
+1 indicate a strong linear relationship, while values near 0 indicate no linear relationship.
+
+The Pearson correlation coefficient $\rho$ can be calculated in R using the cor function
+```{r}
+cor(data$size, data$rent)
+```
+Other types of correlation, such as Spearman or Kendall, can also be computed:
+```{r}
+cor(data$size, data$rent, method = "spearman")
+cor(data$size, data$rent, method = "kendall")
+```
+We can set the hypothesis test with $H_0: \rho = 0$ vs $H_1: \rho \not= 0$ to verify that the correlation is significant. We can use the `cor.test` function
+```{r}
+cor.test(data$size, data$rent)
+```
+If the correlation is significantly different from zero, we can consider the possibility of a linear relationship between the variables.
+
+**Remark**: some of the methods for estimating and testing the correlation coefficient are based on the assumptions that the measures follow a *bivariate normal distribution*, the distributions of $X$ and $Y$ separately are normal, and the points in the scatter plot show an elliptical shape.
+
+### Simple Linear Regression
+
+The Linear Regression model is commonly used to predict the value of a numeric variable with respect to the value of another variable and it is given as  
+$$ Y = a + b X,$$
+where $a$ is called *intercept* and $b$ is the *slope*. Note that the intercept correspond to the value of $Y$ when $X=0$ and the slope indicates the relative variation of $Y$ for each unit of $X$. 
+In R, the `lm` function is used to fit a linear regression model using the *least squares method*. The syntax is `y ~ x`, where $y$ is the dependent variable and $x$ is the independent variable.
+```{r}
+model <- lm(rent ~ size, data = data)
+summary(model)
+```
+
+The output provides the estimated intercept and slope of the regression line. Additionally, it performs a t.test on the slope parameter with $H_0: b=0$ and $H_1:b \not= 0$. \
+The summary also report the $R^2$ coefficient which measure the proportion of variation in $Y$ which is explained by $X$. If it is close to 1, then $X$ predict the majority of the variability of $Y$. \
+We can visualize the regression line on the scatter plot:
+```{r}
+plot(data$size, data$rent, main = "Scatterplot with Regression Line",
+     xlab = "Size (sq ft)", ylab = "Rent ($)")
+abline(model, col = "red")
+```
+```{r}
+ggplot(data, aes(x=size, y=rent))+
+  geom_point() +
+  theme_minimal() + 
+  geom_abline(intercept = model$coefficients[1], 
+              slope = model$coefficients[2], color="red", 
+              linetype="dashed")
+```
+
+Once we have the regression line, we can use the computed estimates to predict the values of $Y$ for specific $X$. The `predict` function can be used to make predictions
+```{r}
+predict(model, newdata = data.frame(size = 1800))
+```
+
+Residuals measure the dispersion of points around the regression line and are crucial to evaluate the quality of the regression model. Considering the predicted value $\hat{Y}_i = \hat{a} + \hat{b} X_i$ for observation $X_i$, the $i$-th residual $e_i$ is computed as $e_i = Y_i- \hat{Y}_i$. \
+When using linear regression model, the following assumptions are considered
+
+- $X$ and $Y$ have a linear relationship.
+- The distribution of the possible values of $Y$ is normal.
+- The variance of the values of $Y$ is the same for each $X$.
+
+These can be verified analyzing the residuals. 
+```{r}
+plot(model$fitted.values, model$residuals, main = "Residuals vs Fitted",
+     xlab = "Fitted Values", ylab = "Residuals")
+abline(h = 0, col = "red")
+```
+
+Alternatively, we can also investigate the quantiles of the residuals using a qqplot. 
+```{r}
+qqnorm(model$residuals)
+qqline(model$residuals, col = "red")
+```
+
+If the normality assumptions are satisfied, residuals should concentrate around the line $Y=0$ and an equivalent dispersion of points above and below the line. 
+
+#### Confidence and Prediction Bands
+
+To assess uncertainty in the regression estimates, we calculate confidence and prediction intervals using the predict function with the interval argument
+```{r}
+newdat <- data.frame(size=seq(250, 2200, 10))
+# Confidence intervals
+conf_int <- predict(model, interval = "confidence", newdata = newdat)
+
+# Prediction intervals
+pred_int <- predict(model, interval = "prediction", newdata = newdat)
+
+# Visualizing intervals
+plot(data$size, data$rent, main = "Confidence and Prediction Intervals",
+     xlab = "Size (sq ft)", ylab = "Rent ($)")
+abline(model, lty = 2)
+lines(newdat$size, conf_int[, 2], col = "blue", lty = 2)
+lines(newdat$size, conf_int[, 3], col = "blue", lty = 2)
+lines(newdat$size, pred_int[, 2], col = "red", lty = 3)
+lines(newdat$size, pred_int[, 3], col = "red", lty = 3)
+```
+
+### Correlation and Cause-Effect
+
+If two events are associated, one wonders if there is the possibility that one is the cause for the other. Notice that the presence of correlation between two variables does not imply a cause-effect relation, but for example it can be due to some common cause.
+
+One possibility is the presence of *confounding variables*, that is a non-measured variable which is related to one or more of the measured variables.
+
+### Robust Statistics
+
+The classical linear regression method, Ordinary Least Squares (OLS), is highly sensitive to violations of the assumptions. For example in presence of outliers, non-normality of errors, heteroscedasticity, that is constant variance of errors. Robust linear regression methods address these challenges by reducing the influence of outliers and when assumptions are violated.
+Furthermore, robust methods are designed such that they perform equivalently ot the OLS method if all the assumptions are satisfied. \
+Common approaches include
+
+- *M-Estimators*: Generalization of maximum likelihood estimators, minimizing a robust loss function.
+```{r, warning=FALSE, message=FALSE}
+library(MASS)
+modelM <- rlm(rent ~ size, data = data)
+summary(modelM)
+```
+
+- *MM-Estimators*: Improves robustness by combining high breakdown point and high efficiency.
+```{r, warning=FALSE, message=FALSE}
+library(robustbase)
+modelMM <- lmrob(rent ~ size, data = data)
+summary(modelMM)
+```
+
+- *Least Trimmed Squares (LTS)*: Minimizes the sum of the smallest squared residuals, focusing on a subset of data.
+```{r, warning=FALSE, message=FALSE}
+library(robustbase)
+model <- ltsReg(rent ~ size, data = data)
+summary(model)
+```
+
+- *Quantile Regression*: Models conditional quantiles (e.g., median or other percentiles) rather than the mean.
+```{r, warning=FALSE, message=FALSE}
+library(quantreg)
+model <- rq(rent ~ size, data = data, tau = 0.5)  # Median regression
+summary(model)
+```
+
+- *Bayesian Robust Regression*: Bayesian approach to robust regression using heavy-tailed distributions (e.g., t-distribution).
+```{r, warning=FALSE, message=FALSE}
+library(brms)
+model <- brm(rent ~ size, data = data, family = student())
+summary(model)
+```
+
+- *Nonparametric Regression* (Locally Weighted): Fits locally weighted regression models.
+```{r, warning=FALSE, message=FALSE}
+library(stats)
+model <- loess(rent ~ size, data = data)
+summary(model)
+```
+
+
+## Exercises
+
+1. Perform a linear regression analysis using the following data
+```{r}
+height <- c(175, 168, 170, 171, 169, 165, 165, 160, 180, 186)
+weight <- c(80, 68, 72, 75, 70, 65, 62, 60, 85, 90)
+```
+
+2. Regression of Carbon Content and Yield Strength. Conduct a linear regression analysis for the following data
+```{r}
+carbon <- c(46, 27, 44, 35, 35, 25, 34, 29, 34)
+yield <- c(71, 47, 63, 52, 55, 37, 49, 43, 48)
+```
+
+## References
+
+---
+nocite: |
+  @yu2022beyond
+  @wilcox2018guide
+  @wasserstein2019moving
+---

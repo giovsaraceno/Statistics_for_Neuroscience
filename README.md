@@ -16,3 +16,8 @@ Topics:
 
 This version is used as supporting material for teaching the basic concepts of probability and statistics using the R programming language. Throughout the sections, greater attention is placed on the application of statistical concepts. 
 This material is not intended to be a book or a comprehensive guide.
+
+### Acknowledgments
+
+- These notes are created on the basis of the material of the course "Statistics for Neuroscience" for the Ph.D. in Neuroscience in the academic year 2023/2024, available at the Repository [PNC](https://github.com/angeella/PNC).
+- The Example on Parkinson data has been provided by Federico Ferraccioli. 

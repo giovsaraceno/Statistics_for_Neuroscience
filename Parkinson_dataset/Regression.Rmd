@@ -1,0 +1,237 @@
+---
+title: "Parkinson data - II"
+author: "Giovanni Saraceno"
+output:
+  pdf_document:
+    keep_tex: true
+    toc: true
+  html_document:
+    df_print: paged
+    toc: true
+date: ''
+bibliography: ../notes.bib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+```
+
+```{r}
+dat <- read.csv('parkinsons_updrs.data', he = TRUE, sep = ',')
+dat$subject. <- as.factor(dat$subject.)
+dat$sex <- ifelse(dat$sex == 1, 'F', 'M')
+dat$sex <- as.factor(dat$sex)
+```
+
+#### Multiple Linear Regression
+
+Suppose that data consist of $\{y_i, \mathbf{x}_i\}$, where each observation consists of a scalr response $y_i$ and a vector of $\mathbf{x}_i$ (covariates) of $p$ parameter regressors. In the multiple linear regression model we have
+$$y_i = \beta_1 x_{i1} + \beta_2 x_{i2} + \ldots + \beta_p x_{ip} - \epsilon_i$$
+or equivalently
+$$\mathbf{y} = \mathbf{X} \mathbf{\beta} + \mathbf{\epsilon},$$
+where $\mathbf{y}$ and $\mathbf{\epsilon}$ are $n \times 1$ vectors of the response variables and the errors of the $n$ observations, and $\mathbf{X}$ is an $n \times p$ matrix of regressors, also sometimes called the design matrix, whose row $i$ contains the $i$-th observations on all the explanatory variables.
+
+In order to estimates the $\beta$'s parameters, the most famous method id the ordinary least squares (OLS). It is based on minimizing the sum of squared residuals. 
+
+It is common to assess the goodness-of-fit of the OLS  regression by comparing how much the initial variation in the sample can be reduced by regressing onto X. The coefficient of determination $R^2$ is defined as a ratio of “explained” variance to the “total” variance of the dependent variable $y$, in the cases where the regression sum of squares equals the sum of squares of residuals
+$$R^2 = \frac{\sum(\hat{y}_i - \bar{y})^2}{\sum(y_i - \bar{y})^2} = 1 - \frac{RSS}{TSS}$$
+where TSS is the total sum of squares for the dependent variable. In order for $R^2$ to be meaningful, the matrix $X$ of data on regressors must contain a column vector of ones to represent the constant whose coefficient is the regression intercept. In that case, $R^2$ will always be a number between 0 and 1, with values close to 1 indicating a good degree of fit.
+
+Let's see the application to the Parkinson data.
+```{r}
+mod1 <- lm(total_UPDRS ~ age + sex + test_time + Jitter... +
+             Shimmer + NHR + HNR + RPDE + DFA + PPE,
+           data = dat)
+summary(mod1)
+```
+
+The output of a linear model includes:
+
+1. **Std. Error** is the standard deviation of the sampling distribution of the estimate of the coefficient under the standard regression assumptions. Such standard deviations are called standard errors of the corresponding quantity (the coefficient estimate in this case).
+2. **t value** is the value of the t-statistic for testing whether the corresponding regression coefficient is
+different from 0.
+3. **Pr.** is the p-value for the hypothesis test for which the t value is the test statistic. It tells you the
+probability of a test statistic at least as unusual as the one you obtained, if the null hypothesis were
+true. In this case, the null hypothesis is that the true coefficient is zero; if that probability is low, it’s
+suggesting that it would be rare to get a result as unusual as this if the coefficient were really zero.
+4. The **Residual standard error** represents the standard deviation of the residuals. It’s a measure of how close the fit is to the points.
+5. The **Multiple R-squared**, also called the coefficient of determination is the proportion of the variance in the data that’s explained by the model. The more variables you add - even if they don’t help - the larger this will be. The Adjusted one reduces that to account for the number of variables in the model.
+6. The **F statistic** on the last line is telling you whether the regression as a whole is performing ‘better
+than random’ - any set of random predictors will have some relationship with the response, so it’s seeing whether your model fits better than you’d expect if all your predictors had no relationship with the response (beyond what would be explained by that randomness). This is used for a test of whether the model outperforms ‘noise’ as a predictor. The p-value in the last row is the p-value for that test,
+essentially comparing the full model you fitted with an intercept-only model.
+
+```{r}
+par(mfrow = c(2, 2))
+plot(mod1)
+```
+```{r, message=FALSE, warning=FALSE}
+library(ggfortify)
+autoplot(mod1) + 
+  theme_bw()
+```
+
+We can also look how good are our fitted values:
+```{r}
+ggplot() + 
+  geom_point(aes(x = fitted(mod1), y = dat$total_UPDRS)) +
+  theme_bw()
+
+```
+
+It is clear that there is some peculiar behaviour. Let us try to underline the observations belonging to each
+subject
+```{r}
+ggplot() + 
+  geom_abline(linetype = 'dashed') +
+  geom_point(aes(x = fitted(mod1), y = dat$total_UPDRS, col = dat$subject.)) + 
+  theme_bw()
+
+```
+
+It seems the response variable strongly depend on the subjects. 
+
+#### Assumptions
+
+1. The errors in the regression should have conditional mean zero.
+2. The regressors in $X$ must all be linearly independent. Usually, it is also assumed that the regressors have finite moments up to at least the second moment. When
+this assumption is violated the regressors are called linearly dependent or perfectly multicollinear. In such
+case the value of the regression coefficient $\beta$ cannot be learned.
+3. Spherical errors, i.e. $Var[\epsilon|X] = \sigma^2 I_n$
+4. Errors are normally distributed. i.e. $\epsilon|X \sim N(0, \sigma^2 I_n)$.
+
+Let’s focus on the residuals, and try to underline the errors belonging to each subject.
+```{r}
+ggplot() + 
+  geom_abline(intercept = 0, slope = 0, linetype = 'dashed') +
+  geom_point(aes(x = fitted(mod1), y = residuals(mod1), col = dat$subject.)) + 
+  theme_bw()
+```
+
+We see that the residuals corresponding to the observations of a specific subject are grouped together. This
+is a particular case in which there is autocorrelation between residuals. In fact, since we have repeated
+measures for each subject, it is not strange to imagine that the errors belonging to a particular subject
+might be correlated. For instance, imagine each subject having a different instrument, each characterized by
+small measurement error. In this case, the observations repeated observations taken by the subjects would
+be independent from each other, but highly correlated within subject. Notice that the distribution of estimates is much more spread out, with the variance being higher, if correlated covariates are considered.
+
+We can try to include the variable subject as a categorical variable
+```{r}
+mod2 <- lm(total_UPDRS ~ subject. + age + sex + test_time +
+             Jitter... + Shimmer + NHR + HNR + RPDE +DFA + PPE,
+           data = dat) 
+summary(mod2)
+```
+
+```{r}
+ggplot(dat) + 
+  geom_point(aes(x = fitted(mod2), y = total_UPDRS, color=subject.)) +
+  geom_abline(linetype = 'dashed') 
+```
+
+Why R gives the warning (2 not defined because of singularities) and we have two coefficients estimated as NA?
+
+The problem is that we are including both an intercept and a number of dummy variables equal to the number of patients. Let’s try to visualize this issue.
+```{r, warning=FALSE, message=FALSE}
+library(reshape2)
+mat <- model.matrix(~ 1 + subject., data = dat)
+dat_mat <- melt(mat)
+ggplot(dat_mat, aes(x = Var1, y = Var2, fill = as.factor(value))) + 
+  geom_tile() + 
+  theme_minimal()
+```
+
+Here we have perfect collinearity, since the intercept can be written as a sum of all the dummy variables corresponding to subjects.
+
+It is useful to consider estimation techniques for linear regressions different from the classical least squares. One alternative id the *Iterative Reweighted Least Squares* (IRLS) which is commonly used for robust regression or for generalized linear models. The MASS package provides the `rlm` function for robust regression using IRLS.
+```{r, warning=FALSE, message=FALSE}
+library(MASS)
+model_irls <- rlm(total_UPDRS ~  age + sex + test_time +
+             Jitter... + Shimmer + NHR + HNR + RPDE + DFA + PPE,
+           data = dat)
+summary(model_irls)
+```
+
+Another method is the *Least Absolute Shrinkage and Selection Operator* (LASSO), which can be performed using the `glmnet` package. 
+```{r, warning=FALSE, message=FALSE}
+library(glmnet)
+x_matrix <- as.matrix(dat[, c(2:4,7, 12, 18:22)])
+# LASSO regression
+model_lasso <- glmnet(x_matrix, dat$total_UPDRS, alpha = 1)  
+
+# Cross-validation for selecting lambda
+cv_model <- cv.glmnet(x_matrix, dat$total_UPDRS, alpha = 1)
+
+# Best lambda
+best_lambda <- cv_model$lambda.min
+
+# Model with the best lambda
+model_lasso_best <- glmnet(x_matrix, dat$total_UPDRS, alpha = 1, lambda = best_lambda)
+coef(model_lasso_best)
+```
+
+The Bayesian information criterion (BIC) and Akaike information criterion (AIC) offer a
+framework of comparing fits of models with a different number of parameters.
+```{r}
+# AIC and BIC for LS
+aic_ls <- AIC(mod1)
+bic_ls <- BIC(mod1)
+
+# AIC and BIC for IRLS
+n <- length(dat$total_UPDRS)
+logLik_irls <- sum(dnorm(model_irls$residuals, mean = 0, sd = sd(model_irls$residuals), log = TRUE))
+aic_irls <- -2 * logLik_irls + 2 * length(coef(model_irls))
+bic_irls <- -2 * logLik_irls + log(n) * length(coef(model_irls))
+
+# AIC and BIC for LASSO
+y <- dat$total_UPDRS
+y_hat_lasso <- predict(model_lasso_best, s = best_lambda, newx = as.matrix(x_matrix))
+rss_lasso <- sum((y - y_hat_lasso)^2)
+sigma_hat_lasso <- sqrt(rss_lasso / n)
+logLik_lasso <- -n / 2 * log(2 * pi * sigma_hat_lasso^2) - rss_lasso / (2 * sigma_hat_lasso^2)
+aic_lasso <- -2 * logLik_lasso + 2 * sum(coef(model_lasso_best) != 0)
+bic_lasso <- -2 * logLik_lasso + log(n) * sum(coef(model_lasso_best) != 0)
+
+# Combine Results
+comparison <- data.frame(
+  Model = c("LS", "IRLS", "LASSO"),
+  AIC = c(aic_ls, aic_irls, aic_lasso),
+  BIC = c(bic_ls, bic_irls, bic_lasso)
+)
+print(comparison)
+```
+
+We finally construct a table comparing the obtained estimates
+```{r}
+coeff_ls <- coef(mod1)
+coeff_irls <- coef(model_irls)
+coeff_lasso <- coef(model_lasso_best)[-1]  # Remove intercept for comparison
+
+# Combine Results
+coefficients <- data.frame(
+  Variable = c("(Intercept)", paste0("X", 1:10)),
+  LS = coeff_ls,
+  IRLS = coeff_irls,
+  LASSO = c(as.numeric(coef(model_lasso_best)[1]), as.numeric(coeff_lasso)))
+
+# View Results
+print(coefficients)
+
+# Plotting Coefficients for Comparison
+library(reshape2)
+coeff_melt <- melt(coefficients, id.vars = "Variable", variable.name = "Method", value.name = "Coefficient")
+
+library(ggplot2)
+ggplot(coeff_melt, aes(x = Variable, y = Coefficient, fill = Method)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  theme_minimal() +
+  labs(title = "Comparison of Coefficients", y = "Coefficient Estimate", x = "Predictor Variable")
+
+```
+
+
+
